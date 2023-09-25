@@ -10,6 +10,7 @@ export default function Style10() {
 
     const container = useRef()
     const engine  = useRef(Engine.create()) //{gravity: {y: 0}}
+    const doubleCreated = useRef(false)
     
     useEffect(() => {
 
@@ -95,22 +96,58 @@ export default function Style10() {
         //     }
         // )
 
-        let spawnPointXforRectanhgle = (altRight.parts[7].bounds.max.x + altRight.parts[7].bounds.min.x) / 2
+        let spawnPointRectanhgles = new Promise(function(res, rej) {
+            setTimeout(() => res(new Particles("rectangles", 
+            {x: altRight.parts[7].position.x, y: altRight.parts[7].bounds.min.y}, 
+            40, 
+            40, 
+            null, 
+            10, 
+            300).populate()), 0)
+        })
+        //(altRight.parts[7].bounds.max.x + altRight.parts[7].bounds.min.x) / 2
         console.log(altRight.parts[7].bounds.max.x, altRight.parts[7].bounds.min.x)
 
-        const circles =  new Particles("circles", {x: altRight.parts[8].bounds.min.x, y: altRight.parts[8].bounds.min.y}, null, null, 20, 110, 100).populate()
-        const rectangles =  new Particles("rectangles", {x: spawnPointXforRectanhgle - 10, y: altRight.parts[7].bounds.min.y}, 40, 40, null, 10, 300).populate()
-        
+
+        const gimmeParticles = async (type) => {
+
+            let createParticles
+            if (type === 'rectangles') {
+                createParticles = new Promise(function(res) {
+                    setTimeout(() => res(new Particles(type, 
+                    {x: altRight.parts[7].position.x, y: altRight.parts[7].bounds.min.y}, 
+                    40, 
+                    40, 
+                    null, 
+                    10, 
+                    300).populate()), 0)})
+            }
+            if (type === 'circles') {
+                createParticles =  new Promise(function(res) {
+                    setTimeout(() => res(new Particles(type, 
+                    {x: altRight.parts[8].position.x, y: altRight.parts[8].bounds.min.y}, 
+                    null, 
+                    null, 
+                    20, 
+                    110, 
+                    50).populate()), 0)})
+            } 
+
+            return await createParticles
+
+        }
+
         console.log('--- left backgrond ---')
-        console.log(altRight.parts[7].bounds)
-        console.log(altRight.parts[7].bounds.max.x, altRight.parts[7].bounds.min.x, altRight.parts[7].position.x, altRight.parts[7].position.x / 1.54)
-        console.log(altRight.parts[7].bounds.max.y, altRight.parts[7].bounds.min.y, altRight.parts[7].position.y)
-        console.log('--- right backgrond ---')
-        console.log(altRight.parts[8].bounds)
-        console.log(altRight.parts[8].bounds.max.x, altRight.parts[8].bounds.min.x, altRight.parts[8].position.x, altRight.parts[8].position.x / 1.54)
-        console.log(altRight.parts[8].bounds.max.y, altRight.parts[8].bounds.min.y, altRight.parts[8].position.y)
-        console.log('--- rect ---')
-        console.log(rectangles[0].bounds)
+        console.log(gimmeParticles('circles').then(result => {
+            if(doubleCreated.current) Composite.add(engine.current.world, result)
+            doubleCreated.current = !doubleCreated.current
+        }))
+        // console.log(gimmeParticles('rectangles').then(result => {
+        //     if(doubleCreated.current) Composite.add(engine.current.world, result)
+        //     doubleCreated.current = !doubleCreated.current
+        // }))
+
+        // console.log(rectangles[0].bounds)
         // const balls = []
         // const rectangles = []
 
@@ -256,6 +293,7 @@ export default function Style10() {
 
         Events.on(engine.current, 'beforeUpdate', function(){
             //console.log(altRight.parts[7].bounds.max.x)
+            //console.log(spawnPointXforRectanhgle)
             
             const gravity = engine.current.gravity
             // balls.forEach((ball) => {
@@ -278,9 +316,9 @@ export default function Style10() {
             //rect,
             //crlc,
             //...balls,
-            ...rectangles,
+            //...rectangles,
             //rect,
-            ...circles,
+            //...circles,
             mouseConstraint,]
         )
         

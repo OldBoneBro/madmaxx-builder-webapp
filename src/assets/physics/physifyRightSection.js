@@ -69,7 +69,7 @@ export function physifyRightSection() {
     ],
   });
 
-  Body.translate(right, { x: 100, y: right.position.y }); //326
+  Body.translate(right, { x: 200, y: right.position.y }); //326
 
   return right;
 }
@@ -97,7 +97,7 @@ export class Particles {
   populate() {
     const particles = [];
 
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 5; i++) {
       if (this.type === "circles" && this.type) {
         particles.push(
           Bodies.circle(
@@ -116,8 +116,8 @@ export class Particles {
       if (this.type === "rectangles" && this.type) {
         particles.push(
           Bodies.rectangle(
-            this.x, // + getRandomOffset(getRandomIntNumber(this.xMaxOffset)),
-            this.y, // + getRandomIntNumber(this.yMaxOffset),
+            this.x + getRandomOffset(getRandomIntNumber(this.xMaxOffset)),
+            this.y + getRandomIntNumber(this.yMaxOffset),
             this.width,
             this.height,
             {
