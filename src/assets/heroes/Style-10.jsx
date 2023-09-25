@@ -10,7 +10,8 @@ export default function Style10() {
 
     const container = useRef()
     const engine  = useRef(Engine.create()) //{gravity: {y: 0}}
-    const doubleCreated = useRef(false)
+    const doubleCreatedRectangles = useRef(false)
+    const doubleCreatedCircles = useRef(false)
     
     useEffect(() => {
 
@@ -70,45 +71,6 @@ export default function Style10() {
         }
 
         const altRight = physifyRightSection()
-
-        // const rect = Bodies.rectangle(
-        //     (altRight.parts[7].position.x / 1.75) + getRandomOffset(getRandomIntNumber(119, 1)),
-        //     192.5,
-        //     40,
-        //     40,
-        //     {
-        //         isStatic: false,
-        //         mass: 10,
-        //         restitution: 0.9,
-        //         friction: 0.005,
-        //     }
-        // ) //(119: 280)(192.5)
-
-        // const crlc = Bodies.circle(
-        //     (altRight.parts[8].position.x / 1.35) + getRandomOffset(getRandomIntNumber(110, 1)),
-        //     709,
-        //     20,
-        //     {
-        //         isStatic: false,
-        //         mass: 10,
-        //         restitution: 0.9,
-        //         friction: 0.005,
-        //     }
-        // )
-
-        let spawnPointRectanhgles = new Promise(function(res, rej) {
-            setTimeout(() => res(new Particles("rectangles", 
-            {x: altRight.parts[7].position.x, y: altRight.parts[7].bounds.min.y}, 
-            40, 
-            40, 
-            null, 
-            10, 
-            300).populate()), 0)
-        })
-        //(altRight.parts[7].bounds.max.x + altRight.parts[7].bounds.min.x) / 2
-        console.log(altRight.parts[7].bounds.max.x, altRight.parts[7].bounds.min.x)
-
-
         const gimmeParticles = async (type) => {
 
             let createParticles
@@ -125,7 +87,7 @@ export default function Style10() {
             if (type === 'circles') {
                 createParticles =  new Promise(function(res) {
                     setTimeout(() => res(new Particles(type, 
-                    {x: altRight.parts[8].position.x, y: altRight.parts[8].bounds.min.y}, 
+                    {x: altRight.parts[8].position.x, y: altRight.parts[8].bounds.max.y}, 
                     null, 
                     null, 
                     20, 
@@ -137,46 +99,14 @@ export default function Style10() {
 
         }
 
-        console.log('--- left backgrond ---')
         console.log(gimmeParticles('circles').then(result => {
-            if(doubleCreated.current) Composite.add(engine.current.world, result)
-            doubleCreated.current = !doubleCreated.current
+            if(doubleCreatedCircles.current) Composite.add(engine.current.world, result)
+            doubleCreatedCircles.current = !doubleCreatedCircles.current
         }))
-        // console.log(gimmeParticles('rectangles').then(result => {
-        //     if(doubleCreated.current) Composite.add(engine.current.world, result)
-        //     doubleCreated.current = !doubleCreated.current
-        // }))
-
-        // console.log(rectangles[0].bounds)
-        // const balls = []
-        // const rectangles = []
-
-        // for(let i = 0; i < 5; i++) {
-
-        //     balls.push(Bodies.circle(
-        //         getRandomIntNumber(482, 360),
-        //         bottomBorder.position.y - 53,
-        //         10,
-        //         {
-        //             mass: 10,
-        //             restitution: 0.9,
-        //             friction: 0.005,
-        //         }
-        //     ))
-
-        //     rectangles.push(Bodies.rectangle(
-        //         getRandomIntNumber(640, 516),
-        //         bottomBorder.position.y - 53,
-        //         20,
-        //         20,
-        //         {
-        //             mass: 10,
-        //             restitution: 0.9,
-        //             friction: 0.005,
-        //         }
-        //     ))
-
-        // }
+        console.log(gimmeParticles('rectangles').then(result => {
+            if(doubleCreatedRectangles.current) Composite.add(engine.current.world, result)
+            doubleCreatedRectangles.current = !doubleCreatedRectangles.current
+        }))
 
         const myMouse = Mouse.create(container.current)
         const mouseConstraint = MouseConstraint.create(engine.current, {
@@ -189,12 +119,7 @@ export default function Style10() {
             }
         })
 
-        Events.on(mouseConstraint, 'click', (event) => {
-            console.log('click')
-            let x = event.pageX
-            let y = event.pageY
-            console.log(Query.point(Composite.allBodies(engine.current.world), {x, y}))
-        })
+        console.log(altRight.parts)
 
         // let dragBody = null
         // let mouseRemoved = false
@@ -292,16 +217,16 @@ export default function Style10() {
             })]
 
         Events.on(engine.current, 'beforeUpdate', function(){
-            //console.log(altRight.parts[7].bounds.max.x)
-            //console.log(spawnPointXforRectanhgle)
-            
+            const rectangles = Composite.allBodies(engine.current.world).filter(body => body.label.includes('rectangle'))
+            const balls = Composite.allBodies(engine.current.world).filter(body => body.label.includes('circle'))
             const gravity = engine.current.gravity
-            // balls.forEach((ball) => {
-            //     //console.log(ball.position)
-            //     Body.applyForce(ball, ball.position, {x: gravity.x, y: -0.011})
-            //     if (Collision.collides(upperBorder, ball)) Body.setPosition(ball, {x: ball.position.x, y: bottomBorder.position.y - 50})
-            //     //if ((ball.position.x > 482) || (ball.position.x < 360)) Body.setPosition(ball, {x: (bottomBorder.position.x / 1.25), y: ball.position.y})           
-            // })
+            
+            console.log(altRight.parts[1])
+            balls.forEach((ball) => {
+                Body.applyForce(ball, ball.position, {x: gravity.x, y: -0.011})
+                if (Collision.collides(altRight.parts[1], ball)) Body.setPosition(ball, {x: ball.position.x, y: 171})
+                //if ((ball.position.x > 482) || (ball.position.x < 360)) Body.setPosition(ball, {x: (bottomBorder.position.x / 1.25), y: ball.position.y})           
+            })
             // rectangles.forEach((rectangle) => {
             //     Body.applyForce(rectangle, rectangle.position, {x: gravity.x, y: -0.0099})
             //     if (Collision.collides(bottomBorder, rectangle)) Body.setPosition(rectangle, {x: rectangle.position.x, y: upperBorder.position.y + 50})  

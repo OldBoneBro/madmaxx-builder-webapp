@@ -109,6 +109,7 @@ export class Particles {
               mass: 10,
               restitution: 0.9,
               friction: 0.005,
+              label: "circle" + i,
             }
           )
         );
@@ -125,6 +126,7 @@ export class Particles {
               mass: 10,
               restitution: 0.9,
               friction: 0.005,
+              label: "rectangle" + i,
             }
           )
         );
