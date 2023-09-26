@@ -102,20 +102,28 @@ export default function Style10() {
         //     doubleCreatedRectangles.current = !doubleCreatedRectangles.current
         // }))
 
-        const testBody = Bodies.circle(716, 150 + 20, 20,{
+        const testBody = Bodies.circle(altRight.parts[7].bounds.min.x, altRight.parts[7].bounds.min.y, 20,{
               isStatic: true,
               mass: 10,
               restitution: 0.9,
               friction: 0.005,
             })
 
-        const testCircles = (new Particles('circles', 
+        const testCircles = new Particles('circles', 
             {x: altRight.parts[8].positionPrev.x, y: altRight.parts[8].positionPrev.y}, 
             null, 
             null, 
             20, 
-            20, 
-            50).populate())
+            50, 
+            50).populate()
+
+        const rectangles = new Particles('rectangles', 
+            {x: altRight.parts[7].position.x, y: altRight.parts[7].bounds.min.y}, 
+            40, 
+            40, 
+            null, 
+            50, 
+            300).populate()
 
         const myMouse = Mouse.create(container.current)
         const mouseConstraint = MouseConstraint.create(engine.current, {
@@ -223,22 +231,28 @@ export default function Style10() {
                 }
             })]
         
-        console.log(altRight.parts[6])
+        console.log(altRight.parts[7])
         
         Events.on(engine.current, 'beforeUpdate', function() {
             const rectangles = Composite.allBodies(engine.current.world).filter(body => body.label.includes('rectangle'))
             const balls = Composite.allBodies(engine.current.world).filter(body => body.label.includes('circle'))
             const gravity = engine.current.gravity
-            
-            testCircles.forEach((ball) => {
-                Body.applyForce(ball, ball.position, {x: gravity.x, y: -0.011})
-                //if (Collision.collides(altRight.parts[1], ball)) Body.setPosition(ball, {x: ball.position.x, y: 171})
-                if ((ball.position.y) >= (altRight.parts[6].bounds.min.y + (ball.radius * 2))) Body.setPosition(ball, {x: ball.position.x, y: 171})
-                //if ((ball.position.x > 482) || (ball.position.x < 360)) Body.setPosition(ball, {x: (bottomBorder.position.x / 1.25), y: ball.position.y})           
-            })
+
+            // testCircles.forEach((ball) => {
+            //     Body.applyForce(ball, ball.position, {x: gravity.x, y: -0.011})
+            //     if (Collision.collides(altRight.parts[9], ball)) Body.setPosition(ball, {x: ball.position.x, y: altRight.parts[8].bounds.max.y})
+            //     if ((ball.position.x > altRight.parts[8].bounds.max.x) || (ball.position.x < altRight.parts[8].bounds.min.x)) Body.setPosition(ball, {x: altRight.parts[8].position.x, y: altRight.parts[8].position.y})
+            //     if ((ball.position.y > altRight.parts[8].bounds.max.y) || (ball.position.y < altRight.parts[8].bounds.min.y)) Body.setPosition(ball, {x: altRight.parts[8].position.x, y: altRight.parts[8].position.y})
+
+            //     //if ((ball.position.x > 482) || (ball.position.x < 360)) Body.setPosition(ball, {x: (bottomBorder.position.x / 1.25), y: ball.position.y})           
+            // })
             // rectangles.forEach((rectangle) => {
-            //     Body.applyForce(rectangle, rectangle.position, {x: gravity.x, y: -0.0099})
-            //     if (Collision.collides(bottomBorder, rectangle)) Body.setPosition(rectangle, {x: rectangle.position.x, y: upperBorder.position.y + 50})  
+            //     //Body.applyForce(rectangle, rectangle.position, {x: gravity.x, y: -0.0035})
+            //     Body.setVelocity(rectangle, {x: rectangle.velocity.x, y: -0.0035})
+            //     if (Collision.collides(altRight.parts[10], rectangle)) Body.setPosition(rectangle, {x: rectangle.position.x, y: altRight.parts[7].bounds.min.y})
+            //     if ((rectangle.position.x > altRight.parts[7].bounds.max.x) || (rectangle.position.x < altRight.parts[7].bounds.min.x)) Body.setPosition(rectangle, {x: altRight.parts[7].position.x, y: altRight.parts[7].position.y})
+            //     if ((rectangle.position.y > altRight.parts[7].bounds.max.y) || (rectangle.position.y < altRight.parts[7].bounds.min.y)) Body.setPosition(rectangle, {x: altRight.parts[7].position.x, y: altRight.parts[7].position.y})
+  
             // })
 
         })
@@ -247,8 +261,9 @@ export default function Style10() {
             [...walls,
             //right,
             altRight,
-            //testBody,
-            ...testCircles,
+            testBody,
+            //...rectangles,
+            //...testCircles,
             mouseConstraint,]
         )
         

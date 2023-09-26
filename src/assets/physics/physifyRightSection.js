@@ -37,6 +37,18 @@ export function physifyRightSection() {
     render: { fillStyle: "#1F1F1F" },
     label: "background",
   });
+  const innerTopRight = Bodies.rectangle(608, 170, 285, 10, {
+    isStatic: true,
+    isSensor: true,
+    render: { fillStyle: "#FF0000" },
+    label: "innerTopRight",
+  });
+  const innerBottomLeft = Bodies.rectangle(292, 725, 285, 10, {
+    isStatic: true,
+    isSensor: true,
+    render: { fillStyle: "#FF0000" },
+    label: "innerBottomLeft",
+  });
   const innerLeftBackground = Bodies.rectangle(292, 450, 285, 557, {
     isStatic: true,
     isSensor: true,
@@ -66,6 +78,8 @@ export function physifyRightSection() {
       background,
       innerLeftBackground,
       innerRightBackground,
+      innerTopRight,
+      innerBottomLeft,
     ],
   });
 
@@ -101,7 +115,7 @@ export class Particles {
       if (this.type === "circles" && this.type) {
         particles.push(
           Bodies.circle(
-            this.x + getRandomOffset(getRandomIntNumber(this.xMaxOffset)),
+            this.x + getRandomIntNumber(this.xMaxOffset),
             this.y - getRandomIntNumber(this.yMaxOffset),
             this.radius,
             {
@@ -117,7 +131,7 @@ export class Particles {
       if (this.type === "rectangles" && this.type) {
         particles.push(
           Bodies.rectangle(
-            this.x + getRandomOffset(getRandomIntNumber(this.xMaxOffset)),
+            this.x - getRandomIntNumber(this.xMaxOffset),
             this.y + getRandomIntNumber(this.yMaxOffset),
             this.width,
             this.height,
