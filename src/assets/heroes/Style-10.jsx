@@ -84,29 +84,38 @@ export default function Style10() {
                     10, 
                     300).populate()), 0)})
             }
-            if (type === 'circles') {
-                createParticles =  new Promise(function(res) {
-                    setTimeout(() => res(new Particles(type, 
-                    {x: altRight.parts[8].position.x, y: altRight.parts[8].bounds.max.y}, 
-                    null, 
-                    null, 
-                    20, 
-                    110, 
-                    50).populate()), 0)})
-            } 
+            // if (type === 'circles') {
+            //     createParticles =  new Promise(function(res) {
+            //         setTimeout(() => res, 0)})
+            // } 
 
             return await createParticles
 
         }
 
-        console.log(gimmeParticles('circles').then(result => {
-            if(doubleCreatedCircles.current) Composite.add(engine.current.world, result)
-            doubleCreatedCircles.current = !doubleCreatedCircles.current
-        }))
-        console.log(gimmeParticles('rectangles').then(result => {
-            if(doubleCreatedRectangles.current) Composite.add(engine.current.world, result)
-            doubleCreatedRectangles.current = !doubleCreatedRectangles.current
-        }))
+        // console.log(gimmeParticles('circles').then(result => {
+        //     if(doubleCreatedCircles.current) Composite.add(engine.current.world, result)
+        //     doubleCreatedCircles.current = !doubleCreatedCircles.current
+        // }))
+        // console.log(gimmeParticles('rectangles').then(result => {
+        //     if(doubleCreatedRectangles.current) Composite.add(engine.current.world, result)
+        //     doubleCreatedRectangles.current = !doubleCreatedRectangles.current
+        // }))
+
+        const testBody = Bodies.circle(716, 150 + 20, 20,{
+              isStatic: true,
+              mass: 10,
+              restitution: 0.9,
+              friction: 0.005,
+            })
+
+        const testCircles = (new Particles('circles', 
+            {x: altRight.parts[8].positionPrev.x, y: altRight.parts[8].positionPrev.y}, 
+            null, 
+            null, 
+            20, 
+            20, 
+            50).populate())
 
         const myMouse = Mouse.create(container.current)
         const mouseConstraint = MouseConstraint.create(engine.current, {
@@ -118,8 +127,6 @@ export default function Style10() {
                 }
             }
         })
-
-        console.log(altRight.parts)
 
         // let dragBody = null
         // let mouseRemoved = false
@@ -215,16 +222,18 @@ export default function Style10() {
                     opacity: "1",
                 }
             })]
-
-        Events.on(engine.current, 'beforeUpdate', function(){
+        
+        console.log(altRight.parts[6])
+        
+        Events.on(engine.current, 'beforeUpdate', function() {
             const rectangles = Composite.allBodies(engine.current.world).filter(body => body.label.includes('rectangle'))
             const balls = Composite.allBodies(engine.current.world).filter(body => body.label.includes('circle'))
             const gravity = engine.current.gravity
             
-            console.log(altRight.parts[1])
-            balls.forEach((ball) => {
+            testCircles.forEach((ball) => {
                 Body.applyForce(ball, ball.position, {x: gravity.x, y: -0.011})
-                if (Collision.collides(altRight.parts[1], ball)) Body.setPosition(ball, {x: ball.position.x, y: 171})
+                //if (Collision.collides(altRight.parts[1], ball)) Body.setPosition(ball, {x: ball.position.x, y: 171})
+                if ((ball.position.y) >= (altRight.parts[6].bounds.min.y + (ball.radius * 2))) Body.setPosition(ball, {x: ball.position.x, y: 171})
                 //if ((ball.position.x > 482) || (ball.position.x < 360)) Body.setPosition(ball, {x: (bottomBorder.position.x / 1.25), y: ball.position.y})           
             })
             // rectangles.forEach((rectangle) => {
@@ -238,12 +247,8 @@ export default function Style10() {
             [...walls,
             //right,
             altRight,
-            //rect,
-            //crlc,
-            //...balls,
-            //...rectangles,
-            //rect,
-            //...circles,
+            //testBody,
+            ...testCircles,
             mouseConstraint,]
         )
         
