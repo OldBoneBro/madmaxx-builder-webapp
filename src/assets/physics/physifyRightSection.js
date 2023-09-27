@@ -83,7 +83,7 @@ export function physifyRightSection() {
     ],
   });
 
-  Body.translate(right, { x: 200, y: right.position.y }); //326
+  Body.translate(right, { x: 326, y: right.position.y }); //326
 
   return right;
 }
