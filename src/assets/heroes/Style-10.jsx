@@ -10,6 +10,7 @@ export default function Style10() {
 
     const container = useRef()
     const engine  = useRef(Engine.create()) //{gravity: {y: 0}}
+    const withFigures = useRef(false)
     
     useEffect(() => {
 
@@ -24,39 +25,13 @@ export default function Style10() {
                     height: containerHeight,
                     wireframes: false,
                     background: 'transparent',
-                    showVelocity: true,
                 }
         })
 
-        const altRight = physifyRightSection()
-        const gimmeParticles = async (type) => {
-
-            let createParticles
-            if (type === 'rectangles') {
-                createParticles = new Promise(function(res) {
-                    setTimeout(() => res(new Particles(type, 
-                    {x: altRight.parts[7].position.x, y: altRight.parts[7].bounds.min.y}, 
-                    40, 
-                    40, 
-                    null, 
-                    10, 
-                    300).populate()), 0)})
-            }
-
-            return await createParticles
-
-        }
-
-        const testBody = Bodies.circle(204, altRight.parts[7].bounds.min.y, 20,
-            {
-            isStatic: true,
-            mass: 10,
-            restitution: 0.9,
-            friction: 0.005,
-            })
+        const right = physifyRightSection()
 
         const circles = new Particles('circles', 
-            {x: altRight.parts[8].positionPrev.x, y: altRight.parts[8].positionPrev.y}, 
+            {x: right.parts[8].positionPrev.x, y: right.parts[8].positionPrev.y}, 
             null, 
             null, 
             20, 
@@ -64,7 +39,7 @@ export default function Style10() {
             50).populate()
 
         const rectangles = new Particles('rectangles', 
-            {x: altRight.parts[7].position.x, y: altRight.parts[7].bounds.min.y}, 
+            {x: right.parts[7].position.x, y: right.parts[7].bounds.min.y}, 
             40, 
             40, 
             null, 
@@ -98,7 +73,7 @@ export default function Style10() {
             Bodies.rectangle(-500, containerHeight / 2, 1000, containerHeight, { 
                 isStatic: true,
                 render: {
-                    fillStyle: "#000",
+                    fillStyle: "#ff0000",
                     opacity: "0.5",
                 }
             }),
@@ -110,32 +85,41 @@ export default function Style10() {
                 }
             })]
         
-        console.log(altRight.parts[7])
+        function setCollision(staticBody, dynamicBody, containerBody) {
+
+            if(dynamicBody.label.includes('circle')) {
+                Body.applyForce(dynamicBody, dynamicBody.position, {x: 0, y: -0.011})
+                if (Collision.collides(staticBody, dynamicBody)) Body.setPosition(dynamicBody, {x: dynamicBody.position.x, y: containerBody.bounds.max.y})
+                if ((dynamicBody.position.x > containerBody.bounds.max.x) || (dynamicBody.position.x < containerBody.bounds.min.x)) Body.setPosition(dynamicBody, {x: containerBody.position.x, y: containerBody.bounds.max.y})
+                if ((dynamicBody.position.y > containerBody.bounds.max.y) || (dynamicBody.position.y < containerBody.bounds.min.y)) Body.setPosition(dynamicBody, {x: containerBody.position.x, y: containerBody.bounds.max.y})
+            }
+            if(dynamicBody.label.includes('rectangle')) {
+                Body.setVelocity(dynamicBody, {x: dynamicBody.velocity.x, y: -0.0035})
+                if (Collision.collides(staticBody, dynamicBody)) Body.setPosition(dynamicBody, {x: dynamicBody.position.x, y: containerBody.bounds.min.y})
+                if ((dynamicBody.position.x > containerBody.bounds.max.x) || (dynamicBody.position.x < containerBody.bounds.min.x)) Body.setPosition(dynamicBody, {x: containerBody.position.x, y: containerBody.bounds.min.y})
+                if ((dynamicBody.position.y > containerBody.bounds.max.y) || (dynamicBody.position.y < containerBody.bounds.min.y)) Body.setPosition(dynamicBody, {x: containerBody.position.x, y: containerBody.bounds.min.y})
+            }
+            
+        }
         
         Events.on(engine.current, 'beforeUpdate', function() {
-            const gravity = engine.current.gravity
+            if((Collision.collides(walls[2], right)) && (!withFigures.current)) {
+                Composite.add(engine.current.world, [
+                    ...rectangles,
+                    ...circles,        
+                ])
+                withFigures.current = true
+            }
 
-            circles.forEach((ball) => {
-                Body.applyForce(ball, ball.position, {x: gravity.x, y: -0.011})
-                if (Collision.collides(altRight.parts[9], ball)) Body.setPosition(ball, {x: ball.position.x, y: altRight.parts[8].bounds.max.y})
-                if ((ball.position.x > altRight.parts[8].bounds.max.x) || (ball.position.x < altRight.parts[8].bounds.min.x)) Body.setPosition(ball, {x: altRight.parts[8].position.x, y: altRight.parts[8].bounds.max.y})
-                if ((ball.position.y > altRight.parts[8].bounds.max.y) || (ball.position.y < altRight.parts[8].bounds.min.y)) Body.setPosition(ball, {x: altRight.parts[8].position.x, y: altRight.parts[8].bounds.max.y})
-            })
-            rectangles.forEach((rectangle) => {
-                Body.setVelocity(rectangle, {x: rectangle.velocity.x, y: -0.0035})
-                if (Collision.collides(altRight.parts[10], rectangle)) Body.setPosition(rectangle, {x: rectangle.position.x, y: altRight.parts[7].bounds.min.y})
-                if ((rectangle.position.x > altRight.parts[7].bounds.max.x) || (rectangle.position.x < altRight.parts[7].bounds.min.x)) Body.setPosition(rectangle, {x: altRight.parts[7].position.x, y: altRight.parts[7].bounds.min.y})
-                if ((rectangle.position.y > altRight.parts[7].bounds.max.y) || (rectangle.position.y < altRight.parts[7].bounds.min.y)) Body.setPosition(rectangle, {x: altRight.parts[7].position.x, y: altRight.parts[7].bounds.min.y})
-            })
-
+            if (withFigures.current) {
+                circles.forEach((ball) => setCollision(right.parts[9], ball, right.parts[8]))
+                rectangles.forEach((rectangle) => setCollision(right.parts[10], rectangle, right.parts[7]))
+            }
         })
 
         Composite.add(engine.current.world, 
             [...walls,
-            altRight,
-            //testBody,
-            ...rectangles,
-            ...circles,
+            right,
             mouseConstraint,]
         )
         
@@ -148,7 +132,6 @@ export default function Style10() {
             Composite.clear(engine.current.world)
             Engine.clear(engine.current)
             render.canvas.remove()
-            render.canvas = null
             render.canvas = null
             render.textures = {}
         })
@@ -170,12 +153,12 @@ export default function Style10() {
                             <ButtonTertiary width="w-[8.875rem]" />
                         </div>
                     </div>
-                    <div className="absolute top-0 right-[-12.56%] flex p-[10.75rem_0rem_10.75rem_6rem] flex-col justify-center items-center rounded-[2.5rem_0rem_0rem_2.5rem] bg-[#1F1F1F]">
+                    {/* <div className="absolute top-0 right-[-12.56%] flex p-[10.75rem_0rem_10.75rem_6rem] flex-col justify-center items-center rounded-[2.5rem_0rem_0rem_2.5rem] bg-[#1F1F1F]">
                         <div className="flex items-start gap-[1.875rem]">
                             <div className="w-[17.8125rem] h-[34.75rem] rounded-[2.5rem] bg-white"></div>
                             <div className="w-[17.8125rem] h-[34.75rem] rounded-[2.5rem] bg-white"></div>
                         </div>
-                    </div>
+                    </div> */}
             </div>
         </div>
     )

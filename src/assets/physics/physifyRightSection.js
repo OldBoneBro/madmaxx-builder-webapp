@@ -40,19 +40,19 @@ export function physifyRightSection() {
   const innerTopRight = Bodies.rectangle(608, 170, 285, 10, {
     isStatic: true,
     isSensor: true,
-    render: { fillStyle: "#FF0000" },
+    render: { fillStyle: "transparent" },
     label: "innerTopRight",
   });
   const innerBottomLeft = Bodies.rectangle(292, 725, 285, 10, {
     isStatic: true,
     isSensor: true,
-    render: { fillStyle: "#FF0000" },
+    render: { fillStyle: "transparent" },
     label: "innerBottomLeft",
   });
   const innerLeftBackground = Bodies.rectangle(292, 450, 285, 557, {
     isStatic: true,
     isSensor: true,
-    render: { fillStyle: "#FFC0CB" },
+    render: { fillStyle: "#fff" },
     chamfer: { radius: 40 },
     label: "innerLeftBackground",
   });
