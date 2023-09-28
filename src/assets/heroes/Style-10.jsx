@@ -30,6 +30,42 @@ export default function Style10() {
 
         const right = physifyRightSection()
 
+        const linkAreaA = Bodies.rectangle(318, 450, 7.5, 900, {
+            isStatic: true,
+            isSensor: true,
+            render: { 
+                fillStyle: "#FF0000",
+                opacity: 0.5,
+            },
+        })
+
+        const linkAreaB = Bodies.rectangle(325, 450, 3, 900, {
+            isStatic: true,
+            isSensor: true,
+            render: { 
+                fillStyle: "#FF0000",
+                opacity: 0.9,
+            },
+        })
+
+        const linkAreaC = Bodies.rectangle(331, 450, 7.5, 900, {
+            isStatic: true,
+            isSensor: true,
+            render: { 
+                fillStyle: "#FF0000",
+                opacity: 0.7,
+            },
+        })
+
+        const linkAreaD = Bodies.rectangle(340, 450, 7.5, 900, {
+            isStatic: true,
+            isSensor: true,
+            render: { 
+                fillStyle: "#FF0000",
+                opacity: 0.5,
+            },
+        })
+
         const circles = new Particles('circles', 
             {x: right.parts[8].positionPrev.x, y: right.parts[8].positionPrev.y}, 
             null, 
@@ -120,7 +156,11 @@ export default function Style10() {
         Composite.add(engine.current.world, 
             [...walls,
             right,
-            mouseConstraint,]
+            mouseConstraint,
+            linkAreaC,
+            linkAreaD,
+            linkAreaB,
+            linkAreaA,]
         )
         
         render.mouse = myMouse
