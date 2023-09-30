@@ -1,21 +1,6 @@
 import Logo from "../components/logo/Logo.jsx"
 import ButtonPrimary from "../components/buttons/ButtonPrimary.jsx"
-import { useEffect } from "react"
-
 export default function Style01() {
-
-    useEffect(() =>{
-        const list = document.getElementById('style-1')
-        const links = list.querySelectorAll('a')
-        const linkData = []
-        for(let i = 0; i < links.length; i++) {
-            linkData.push({
-                'linkId' : 'link' + (i + 1),
-                'spans' : links[i].querySelectorAll('span')
-            }) 
-        }
-        console.log(linkData[0].spans[3] ,linkData[0].spans[3].offsetWidth)
-    }, [])
 
     return(
 
