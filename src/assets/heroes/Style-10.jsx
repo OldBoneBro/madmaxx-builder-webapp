@@ -1,13 +1,15 @@
 import Navigatinon from "../navigation/Navigation.jsx"
 import ButtonPrimary from "../components/buttons/ButtonPrimary.jsx"
 import ButtonTertiary from "../components/buttons/ButtonTertiary.jsx"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { getRandomIntNumber } from "../../utils/getRandom.js"
 import { Engine, Render, Bounds ,Bodies, Body, Mouse, MouseConstraint, Composite, Runner, Events, Collision, Query, Constraint } from "matter-js"
 import { Particles, physifyRightSection } from "../physics/physifyRightSection.js"
+import { populateWithLetterCollision } from "../physics/populateWithLetterCollision.js"
 
 export default function Style10() {
 
+    const [letterStyle, setLetterStyle] = useState([])
     const container = useRef()
     const engine  = useRef(Engine.create()) //{gravity: {y: 0}}
     const withFigures = useRef(false)
@@ -29,42 +31,6 @@ export default function Style10() {
         })
 
         const right = physifyRightSection()
-
-        const linkAreaA = Bodies.rectangle(318, 450, 7.5, 900, {
-            isStatic: true,
-            isSensor: true,
-            render: { 
-                fillStyle: "#FF0000",
-                opacity: 0.5,
-            },
-        })
-
-        const linkAreaB = Bodies.rectangle(325, 450, 3, 900, {
-            isStatic: true,
-            isSensor: true,
-            render: { 
-                fillStyle: "#FF0000",
-                opacity: 0.9,
-            },
-        })
-
-        const linkAreaC = Bodies.rectangle(331, 450, 7.5, 900, {
-            isStatic: true,
-            isSensor: true,
-            render: { 
-                fillStyle: "#FF0000",
-                opacity: 0.7,
-            },
-        })
-
-        const linkAreaD = Bodies.rectangle(340, 450, 7.5, 900, {
-            isStatic: true,
-            isSensor: true,
-            render: { 
-                fillStyle: "#FF0000",
-                opacity: 0.5,
-            },
-        })
 
         const circles = new Particles('circles', 
             {x: right.parts[8].positionPrev.x, y: right.parts[8].positionPrev.y}, 
@@ -138,29 +104,63 @@ export default function Style10() {
             
         }
         
-        Events.on(engine.current, 'beforeUpdate', function() {
-            if((Collision.collides(walls[2], right)) && (!withFigures.current)) {
-                Composite.add(engine.current.world, [
-                    ...rectangles,
-                    ...circles,        
-                ])
-                withFigures.current = true
-            }
 
-            if (withFigures.current) {
-                circles.forEach((ball) => setCollision(right.parts[9], ball, right.parts[8]))
-                rectangles.forEach((rectangle) => setCollision(right.parts[10], rectangle, right.parts[7]))
-            }
-        })
+        // const textLetter = Bodies.rectangle(
+        //     getLinkData()[0].spans[3].offsetLeft - 540.5, // the letter i has 544 offset
+        //     getLinkData()[0].spans[3].offsetTop + 6,
+        //     7.75,
+        //     getLinkData()[0].spans[3].offsetHeight,
+        //     {
+        //         isStatic: true,
+        //         isSensor: true,
+        //         render: { 
+        //             fillStyle: "#FF0000",
+        //             opacity: 0.5,
+        //         },
+        //     }
+        // )
 
+        const dynamicRight = right.parts.filter((part) => ((!part.label.includes('inner')) && (!part.label.includes('background'))))
+
+
+        window.onload = () => {
+
+            const letterAreas = populateWithLetterCollision(540, 10)
+            letterAreas.forEach((area) => Composite.add(engine.current.world, area.body))
+
+            Events.on(engine.current, 'beforeUpdate', function() {
+                if((Collision.collides(walls[2], right)) && (!withFigures.current)) {
+                    Composite.add(engine.current.world, [
+                        ...rectangles,
+                        ...circles,        
+                    ])
+                    withFigures.current = true
+                }
+    
+                if (withFigures.current) {
+                    circles.forEach((ball) => setCollision(right.parts[9], ball, right.parts[8]))
+                    rectangles.forEach((rectangle) => setCollision(right.parts[10], rectangle, right.parts[7]))
+                }
+
+                letterAreas.forEach((area) => {
+                    dynamicRight.forEach((body) => {
+                        if (Collision.collides(body, area.body)) area.element.classList.add('text-white')
+                        if (!(Collision.collides(body, area.body))) area.element.classList.remove('text-white')
+
+
+                        //if ((!Collision.collides(body, area.body)) && (area.element.classList.contains('text-white'))) area.element.classList.remove('text-white')
+
+                    })
+                })
+            })
+    
+        }
+        
         Composite.add(engine.current.world, 
             [...walls,
             right,
             mouseConstraint,
-            linkAreaC,
-            linkAreaD,
-            linkAreaB,
-            linkAreaA,]
+            ]
         )
         
         render.mouse = myMouse
