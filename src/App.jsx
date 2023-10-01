@@ -1,8 +1,9 @@
-import Style10 from "./assets/heroes/Style-10.jsx"
+import Variant01 from "./assets/pages/Variant01.jsx"
+
 function App() {
 
   return (
-      <Style10/>
+      <Variant01/>
   )
 
 }
