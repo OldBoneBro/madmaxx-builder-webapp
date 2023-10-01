@@ -5,13 +5,13 @@ import { useEffect, useRef, useState } from "react"
 import { getRandomIntNumber } from "../../utils/getRandom.js"
 import { Engine, Render, Bounds ,Bodies, Body, Mouse, MouseConstraint, Composite, Runner, Events, Collision, Query, Constraint } from "matter-js"
 import { Particles, physifyRightSection } from "../physics/physifyRightSection.js"
-import { populateWithLetterCollision } from "../physics/populateWithLetterCollision.js"
+import { populateWithLetterAreas } from "../physics/populateWithLetterAreas.js"
+import { centerBody } from "../physics/centerBody.js"
 
 export default function Style10() {
 
-    const [letterStyle, setLetterStyle] = useState([])
     const container = useRef()
-    const engine  = useRef(Engine.create()) //{gravity: {y: 0}}
+    const engine  = useRef(Engine.create())
     const withFigures = useRef(false)
     
     useEffect(() => {
@@ -87,48 +87,40 @@ export default function Style10() {
                 }
             })]
         
-        function setCollision(staticBody, dynamicBody, containerBody) {
+        function reposition(bodyA, bodyB, containerBody) {
 
-            if(dynamicBody.label.includes('circle')) {
-                Body.applyForce(dynamicBody, dynamicBody.position, {x: 0, y: -0.011})
-                if (Collision.collides(staticBody, dynamicBody)) Body.setPosition(dynamicBody, {x: dynamicBody.position.x, y: containerBody.bounds.max.y})
-                if ((dynamicBody.position.x > containerBody.bounds.max.x) || (dynamicBody.position.x < containerBody.bounds.min.x)) Body.setPosition(dynamicBody, {x: containerBody.position.x, y: containerBody.bounds.max.y})
-                if ((dynamicBody.position.y > containerBody.bounds.max.y) || (dynamicBody.position.y < containerBody.bounds.min.y)) Body.setPosition(dynamicBody, {x: containerBody.position.x, y: containerBody.bounds.max.y})
+            if(bodyB.label.includes('circle')) {
+                Body.applyForce(bodyB, bodyB.position, {x: 0, y: -0.011})
+                if (Collision.collides(bodyA, bodyB)) Body.setPosition(bodyB, {x: bodyB.position.x, y: containerBody.bounds.max.y})
+                if ((bodyB.position.x > containerBody.bounds.max.x) || (bodyB.position.x < containerBody.bounds.min.x)) Body.setPosition(bodyB, {x: containerBody.position.x, y: containerBody.bounds.max.y})
+                if ((bodyB.position.y > containerBody.bounds.max.y) || (bodyB.position.y < containerBody.bounds.min.y)) Body.setPosition(bodyB, {x: containerBody.position.x, y: containerBody.bounds.max.y})
             }
-            if(dynamicBody.label.includes('rectangle')) {
-                Body.setVelocity(dynamicBody, {x: dynamicBody.velocity.x, y: -0.0035})
-                if (Collision.collides(staticBody, dynamicBody)) Body.setPosition(dynamicBody, {x: dynamicBody.position.x, y: containerBody.bounds.min.y})
-                if ((dynamicBody.position.x > containerBody.bounds.max.x) || (dynamicBody.position.x < containerBody.bounds.min.x)) Body.setPosition(dynamicBody, {x: containerBody.position.x, y: containerBody.bounds.min.y})
-                if ((dynamicBody.position.y > containerBody.bounds.max.y) || (dynamicBody.position.y < containerBody.bounds.min.y)) Body.setPosition(dynamicBody, {x: containerBody.position.x, y: containerBody.bounds.min.y})
+            if(bodyB.label.includes('rectangle')) {
+                Body.setVelocity(bodyB, {x: bodyB.velocity.x, y: -0.0035})
+                if (Collision.collides(bodyA, bodyB)) Body.setPosition(bodyB, {x: bodyB.position.x, y: containerBody.bounds.min.y})
+                if ((bodyB.position.x > containerBody.bounds.max.x) || (bodyB.position.x < containerBody.bounds.min.x)) Body.setPosition(bodyB, {x: containerBody.position.x, y: containerBody.bounds.min.y})
+                if ((bodyB.position.y > containerBody.bounds.max.y) || (bodyB.position.y < containerBody.bounds.min.y)) Body.setPosition(bodyB, {x: containerBody.position.x, y: containerBody.bounds.min.y})
             }
             
         }
-        
 
-        // const textLetter = Bodies.rectangle(
-        //     getLinkData()[0].spans[3].offsetLeft - 540.5, // the letter i has 544 offset
-        //     getLinkData()[0].spans[3].offsetTop + 6,
-        //     7.75,
-        //     getLinkData()[0].spans[3].offsetHeight,
-        //     {
-        //         isStatic: true,
-        //         isSensor: true,
-        //         render: { 
-        //             fillStyle: "#FF0000",
-        //             opacity: 0.5,
-        //         },
-        //     }
-        // )
+        function colourToggler(bodyA, bodyB, element) {
 
-        const dynamicRight = right.parts.filter((part) => ((!part.label.includes('inner')) && (!part.label.includes('background'))))
+            if (Collision.collides(bodyA, bodyB)) element.classList.add('text-white')
+            if ((Collision.collides(bodyA.parts[8], bodyB)) && (element.classList.contains('text-white'))) element.classList.remove('text-white')
+            if ((Collision.collides(bodyA.parts[7], bodyB)) && (element.classList.contains('text-white'))) element.classList.remove('text-white')
+            if (!(Collision.collides(bodyA, bodyB))) element.classList.remove('text-white')
 
+        } 
 
         window.onload = () => {
-
-            const letterAreas = populateWithLetterCollision(540, 10)
+            
+            const letterAreas = populateWithLetterAreas(540, 10)
             letterAreas.forEach((area) => Composite.add(engine.current.world, area.body))
 
             Events.on(engine.current, 'beforeUpdate', function() {
+
+                centerBody(-100, 1300, -100, 1000, right, 326, 450, engine.current.world)
                 if((Collision.collides(walls[2], right)) && (!withFigures.current)) {
                     Composite.add(engine.current.world, [
                         ...rectangles,
@@ -138,23 +130,17 @@ export default function Style10() {
                 }
     
                 if (withFigures.current) {
-                    circles.forEach((ball) => setCollision(right.parts[9], ball, right.parts[8]))
-                    rectangles.forEach((rectangle) => setCollision(right.parts[10], rectangle, right.parts[7]))
+                    circles.forEach((ball) => reposition(right.parts[9], ball, right.parts[8]))
+                    rectangles.forEach((rectangle) => reposition(right.parts[10], rectangle, right.parts[7]))
                 }
 
-                letterAreas.forEach((area) => {
-                    dynamicRight.forEach((body) => {
-                        if (Collision.collides(body, area.body)) area.element.classList.add('text-white')
-                        if (!(Collision.collides(body, area.body))) area.element.classList.remove('text-white')
+                letterAreas.forEach((area) => colourToggler(right, area.body, area.element))
 
-
-                        //if ((!Collision.collides(body, area.body)) && (area.element.classList.contains('text-white'))) area.element.classList.remove('text-white')
-
-                    })
-                })
             })
-    
         }
+
+        mouseConstraint.mouse.element.removeEventListener('mousewheel', mouseConstraint.mouse.mousewheel)
+        mouseConstraint.mouse.element.removeEventListener('DOMMouseScroll', mouseConstraint.mouse.mousewheel)
         
         Composite.add(engine.current.world, 
             [...walls,
@@ -182,7 +168,7 @@ export default function Style10() {
         <div className="flex justify-center">
             <div className="flex flex-col w-[90rem] h-[56.25rem] gap-[4.5rem] relative overflow-hidden" >
                 <div ref={container} className="absolute left-[34rem] w-[107.3125rem] h-full z-50"></div>
-                    <div className="z-[100]">
+                    <div>
                         <Navigatinon />
                     </div>
                     <div className="flex w-[47.3125rem] flex-col items-start gap-10 ml-20">
@@ -193,12 +179,6 @@ export default function Style10() {
                             <ButtonTertiary width="w-[8.875rem]" />
                         </div>
                     </div>
-                    {/* <div className="absolute top-0 right-[-12.56%] flex p-[10.75rem_0rem_10.75rem_6rem] flex-col justify-center items-center rounded-[2.5rem_0rem_0rem_2.5rem] bg-[#1F1F1F]">
-                        <div className="flex items-start gap-[1.875rem]">
-                            <div className="w-[17.8125rem] h-[34.75rem] rounded-[2.5rem] bg-white"></div>
-                            <div className="w-[17.8125rem] h-[34.75rem] rounded-[2.5rem] bg-white"></div>
-                        </div>
-                    </div> */}
             </div>
         </div>
     )
