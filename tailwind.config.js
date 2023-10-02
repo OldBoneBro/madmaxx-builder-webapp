@@ -21,6 +21,11 @@ export default {
       backgroundPosition: {
         "no-gradient": "0% 100%",
         "show-gradient": "50% 50%",
+        "pos-0": "0% 0%",
+        "pos-100": "100% 100%",
+      },
+      backgroundSize: {
+        "size-200": "200% 200%",
       },
     },
   },
