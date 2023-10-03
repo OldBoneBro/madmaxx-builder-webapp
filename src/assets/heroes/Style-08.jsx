@@ -7,29 +7,27 @@ export default function Style08() {
 
     const [translation, setTranslation] = useState('')
     const midPoint = useRef(720)
+    const prevX = useRef({})
+    const clickedElems = useRef(null)
+
 
     const getElementMidPoint = (elem) => elem.offsetLeft + (elem.offsetWidth / 2)
+    const getTranslateX = (elem) => {
+        const style = window.getComputedStyle(elem)
+        const matrix = new WebKitCSSMatrix(style.transform)
+        return matrix.m41
+    } 
 
-    const handleHover = (event) => {
-
-        const centerOffset = getElementMidPoint(event.target) - midPoint.current
-        //`transform: translateX(${centerOffset}px) transition-property: transform transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) transition-duration: 150ms`
-
-        if(event.type.includes('leave')) setTranslation(`transition-property: transform transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) transition-duration: 150ms`)
-        if(event.type.includes('enter')) setTranslation(newTransition)
-
-    }
 
     const handleClick = (event) => {
         
         const centerOffset = getElementMidPoint(event.target) - midPoint.current
-        console.log('offset: ', centerOffset)
-        console.log('elemMidPoint: ', getElementMidPoint(event.target))
-        const newTransition = `translateX(${centerOffset * -1}px)`
+        const newTransition = (clickedElems.current === event.target) ? `translateX(${prevX.current[event.target.id]}px)` : `translateX(${centerOffset * -1}px)`
+        clickedElems.current = event.target
+        prevX.current[event.target.id] = getTranslateX(event.target.parentElement)
         setTranslation(newTransition)
 
     }
-
 
     return(
         <div className="flex flex-col w-[90rem] items-start overflow-hidden">
@@ -45,10 +43,10 @@ export default function Style08() {
                         <ButtonTertiary width="w-[8.875rem]" />  
                     </div>
                 </div>
-                <div className={`flex items-end gap-10 transition-transform`} style={{ transform: translation}}>
-                    <div className="w-[36.125rem] h-[20.3125rem] rounded-[2.5rem] hover:transition-colors hover:bg-white bg-[#1F1F1F]" onClick={handleClick}></div>
-                    <div className="w-[36.125rem] h-[20.3125rem] rounded-[2.5rem] hover:transition-colors hover:bg-white bg-[#1F1F1F]" onClick={handleClick}></div>
-                    <div className="w-[36.125rem] h-[20.3125rem] rounded-[2.5rem] hover:transition-colors hover:bg-white bg-[#1F1F1F]" onClick={handleClick}></div>
+                <div className={`flex items-end gap-10 transition-transform duration-200`} style={{ transform: translation}}>
+                    <div className="w-[36.125rem] h-[20.3125rem] rounded-[2.5rem] hover:transition-colors hover:bg-white bg-[#1F1F1F]" onClick={handleClick} id="slide-1"></div>
+                    <div className="w-[36.125rem] h-[20.3125rem] rounded-[2.5rem] hover:transition-colors hover:bg-white bg-[#1F1F1F]" onClick={handleClick} id="slide-2"></div>
+                    <div className="w-[36.125rem] h-[20.3125rem] rounded-[2.5rem] hover:transition-colors hover:bg-white bg-[#1F1F1F]" onClick={handleClick} id="slide-3"></div>
                 </div>
             </div>
 
