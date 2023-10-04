@@ -18,11 +18,11 @@ export default function Style07() {
                     <ButtonTertiary width="w-[8.875rem]" />  
                 </div>
                 <div className="flex items-end gap-[1.4375rem]">
-                    <div className="w-[13.125rem] h-[13.125rem] rounded-[2.5rem] bg-[#1F1F1F]"></div>
-                    <div className="w-[13.125rem] h-[13.125rem] rounded-[2.5rem] bg-[#1F1F1F]"></div>
-                    <div className="w-[21.75rem] h-[21.75rem] rounded-[2.5rem] bg-white"></div>
-                    <div className="w-[13.125rem] h-[13.125rem] rounded-[2.5rem] bg-[#1F1F1F]"></div>
-                    <div className="w-[13.125rem] h-[13.125rem] rounded-[2.5rem] bg-[#1F1F1F]"></div>
+                    <div className="hover:transition-all transition-all w-[13.125rem] h-[13.125rem] hover:w-[21.75rem] hover:h-[21.75rem] rounded-[2.5rem] hover:bg-white bg-[#1F1F1F]"></div>
+                    <div className="hover:transition-all transition-all w-[13.125rem] h-[13.125rem] hover:w-[21.75rem] hover:h-[21.75rem] rounded-[2.5rem] hover:bg-white bg-[#1F1F1F]"></div>
+                    <div className="hover:transition-all transition-all w-[13.125rem] h-[13.125rem] hover:w-[21.75rem] hover:h-[21.75rem] rounded-[2.5rem] hover:bg-white bg-[#1F1F1F]"></div>
+                    <div className="hover:transition-all transition-all w-[13.125rem] h-[13.125rem] hover:w-[21.75rem] hover:h-[21.75rem] rounded-[2.5rem] hover:bg-white bg-[#1F1F1F]"></div>
+                    <div className="hover:transition-all transition-all w-[13.125rem] h-[13.125rem] hover:w-[21.75rem] hover:h-[21.75rem] rounded-[2.5rem] hover:bg-white bg-[#1F1F1F]"></div>
                 </div>
             </div>
 
