@@ -1,9 +1,9 @@
-import Style08 from "./assets/heroes/Style-08.jsx"
+import Style01 from "./assets/heroes/Style-01.jsx"
 
 function App() {
 
   return (
-      <Style08/>
+      <Style01/>
   )
 
 }
