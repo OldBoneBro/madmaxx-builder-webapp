@@ -7,29 +7,22 @@ export default function Style08() {
 
     const [translation, setTranslation] = useState('')
     const midPoint = useRef(720)
-    const prevX = useRef({})
     const clickedElems = useRef(null)
 
-
     const getElementMidPoint = (elem) => elem.offsetLeft + (elem.offsetWidth / 2)
-    const getTranslateX = (elem) => {
-        const style = window.getComputedStyle(elem)
-        const matrix = new WebKitCSSMatrix(style.transform)
-        return matrix.m41
-    } 
-
 
     const handleClick = (event) => {
         
         const centerOffset = getElementMidPoint(event.target) - midPoint.current
-        const newTransition = (clickedElems.current === event.target) ? `translateX(${prevX.current[event.target.id]}px)` : `translateX(${centerOffset * -1}px)`
-        clickedElems.current = event.target
-        prevX.current[event.target.id] = getTranslateX(event.target.parentElement)
+        const sameElement = clickedElems.current === event.target
+        const newTransition = (sameElement) ? `translateX(0px)`: `translateX(${centerOffset * -1}px)`
+        clickedElems.current = (sameElement) ? null : event.target
         setTranslation(newTransition)
 
     }
 
     return(
+        
         <div className="flex flex-col w-[90rem] items-start overflow-hidden">
             <Navigatinon />
             <div className="flex w-full px-20 py-24 flex-col items-start gap-16">
@@ -43,7 +36,7 @@ export default function Style08() {
                         <ButtonTertiary width="w-[8.875rem]" />  
                     </div>
                 </div>
-                <div className={`flex items-end gap-10 transition-transform duration-200`} style={{ transform: translation}}>
+                <div className={`flex items-end gap-10 transition-transform duration-200`} style={{ transform: translation }}>
                     <div className="w-[36.125rem] h-[20.3125rem] rounded-[2.5rem] hover:transition-colors hover:bg-white bg-[#1F1F1F]" onClick={handleClick} id="slide-1"></div>
                     <div className="w-[36.125rem] h-[20.3125rem] rounded-[2.5rem] hover:transition-colors hover:bg-white bg-[#1F1F1F]" onClick={handleClick} id="slide-2"></div>
                     <div className="w-[36.125rem] h-[20.3125rem] rounded-[2.5rem] hover:transition-colors hover:bg-white bg-[#1F1F1F]" onClick={handleClick} id="slide-3"></div>
@@ -51,7 +44,6 @@ export default function Style08() {
             </div>
 
         </div>
-
 
     )
 
