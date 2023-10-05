@@ -2,21 +2,191 @@ import Navigatinon from "../navigation/Navigation.jsx"
 import ButtonPrimary from "../components/buttons/ButtonPrimary.jsx"
 import ButtonTertiary from "../components/buttons/ButtonTertiary.jsx"
 import { useEffect, useRef } from "react"
-import { Engine, Render } from "matter-js"
+import { Engine, Render, Composite, Runner, Bodies, Mouse, MouseConstraint, Constraint, Events, Detector } from "matter-js"
 
 export default function Style01() {
 
-    const canvas = useRef(null)
-    const engine  = useRef(Engine.create())
+    const canv = useRef(null)
+    const engine  = useRef(Engine.create({ gravity: {y: -0.4 } }))
 
     useEffect(() => {
+
+        const canvWidth = canv.current.clientWidth
+        const canvHeight = canv.current.clientHeight
+
+        const render = Render.create({
+            element: canv.current,
+            engine: engine.current,
+            options: {
+                width: canvWidth,
+                height: canvHeight,
+                wireframes: false,
+                background: 'transparent',
+            }
+        })
+        const testBodies = [
+        Bodies.circle(canvWidth / 2, canvHeight / 1.5, 50, {
+            isStatic: false,
+            friction: 0.5,
+            restitution: 0.5,
+            label: "A",
+            render: {
+                fillStyle: "#FF0000"
+            }
+        }),
+        Bodies.circle(canvWidth / 2  , canvHeight / 2, 50, {
+            isStatic: false,
+            friction: 0.5,
+            restitution: 0.5,
+            label: "B",
+            render: {
+                fillStyle: "#00FF00"
+            }
+        }), 
+        Bodies.circle(canvWidth / 2, canvHeight / 2.5, 50, {
+            isStatic: false,
+            friction: 0.5,
+            restitution: 0.5,
+            label: "C",
+            render: {
+                fillStyle: "#0000FF"
+            }
+        })]
+
+        const myMouse = Mouse.create(canv.current)
+        const mouseConstraint = MouseConstraint.create(engine.current, {
+            mouse: myMouse,
+            constraint: {
+                stiffness: 0.1,
+                render: {
+                    visible: false
+                }
+            }
+        })
+
+        const walls = [
+            Bodies.rectangle(canvWidth / 2, 0, canvWidth, 100, { 
+                isStatic: true,
+                render: {
+                    fillStyle: "#fff",
+                }
+            }),
+            Bodies.rectangle(canvWidth, canvHeight / 2, 100, canvHeight, { 
+                isStatic: true,
+                render: {
+                    fillStyle: "#fff",
+                }
+            }),
+            Bodies.rectangle(canvWidth / 2, canvHeight, canvWidth, 100, { 
+                isStatic: true,
+                render: {
+                    fillStyle: "#ff0000",
+                    opacity: "0.5",
+                }
+            }),
+            Bodies.rectangle(0, canvHeight / 2, 100, canvHeight, { 
+                isStatic: true,
+                render: {
+                    fillStyle: "#000",
+                    opacity: "1",
+                }
+            })]
+
+        const indicators = [
+            Bodies.rectangle(canvWidth / 2, 150, canvWidth - 100, 10, { 
+                isStatic: true,
+                render: {
+                    fillStyle: "#ff0000",
+                    opacity: 0.5,
+                }
+            }),
+            Bodies.rectangle(canvWidth / 2, canvHeight - 150, canvWidth - 100, 10, { 
+                isStatic: true,
+                render: {
+                    fillStyle: "#ff0000",
+                    opacity: 0.5,
+                }
+            })
+        ]
+
+        // const detect = Detector.create({
+        //     bodies: [
+        //         ...indicators,
+        //         testCircleA,
+        //         testCircleB,
+        //         testCircleC,
+        //     ],
+        // })
+
+        //console.log(testCircleA.collisionFilter, testCircleB.collisionFilter, testCircleC.collisionFilter, indicators[0].collisionFilter, indicators[1].collisionFilter)
+
+        const createConstraints = (bodies) =>  {
+
+            const bodiesCopy = new Array(...bodies)
+            let firstBody = bodiesCopy.shift()
+            console.log(firstBody)
+
+            return bodiesCopy.reduce((prevBody, body) => {         
+                let constraint = Constraint.create({
+                    bodyA: prevBody,
+                    bodyB: body,
+                    length: 150,
+                    stiffness: 0.2,
+                })
+                console.log('before ', prevBody)
+                prevBody = body
+                console.log('after ', prevBody)
+                
+                return constraint
+            }, firstBody)
+
+        }
+
+        console.log(createConstraints(testBodies))
+
+
+
+        Events.on(engine.current, 'beforeUpdate', () => {
+        })
+
+        Composite.add(engine.current.world, [
+            ...testBodies,  
+            ...walls,
+            ...indicators,
+            mouseConstraint,
+            // Constraint.create({
+            //     bodyA: testBodies[0],
+            //     bodyB: testBodies[1],
+            //     length: 150,
+            //     stiffness: 0.2,
+            // }),
+            // Constraint.create({
+            //     bodyA: testBodies[1],
+            //     bodyB: testBodies[2],
+            //     length: 150,
+            //     stiffness: 0.2,
+            // })
+
+        ])
+
+        Runner.run(engine.current)
+        Render.run(render)
+
+        return(() => {
+            Render.stop(render)
+            Composite.clear(engine.current.world)
+            Engine.clear(engine.current)
+            render.canvas.remove()
+            render.canvas = null
+            render.textures = {}
+        })
 
     }, [])
 
     return(
         <div className="flex flex-col w-[90rem] h-[56.25rem] gap-[4.5rem] relative overflow-hidden">
             <Navigatinon style={11} />
-            <div ref={canvas} className="absolute left-[39.8125rem] w-[50.1875rem] h-full z-50"></div>
+            <div ref={canv} className="absolute left-[39.8125rem] w-[50.1875rem] h-full z-50"></div>
             <div className="flex gap-20 ml-20">
                 <div className="flex w-[45rem] flex-col items-start gap-10">
                     <h2 className="self-stretch dark:text-white text-[#404040] font-inter text-[6rem]/[7rem] not-italic font-semibold tracking-[-0.24rem]">Build your landings in minutes</h2>
