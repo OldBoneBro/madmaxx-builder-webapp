@@ -1,6 +1,17 @@
 import { Render } from "matter-js";
 
-class MyRender extends Render {
+class someClass {
+  constructor(width, height) {
+    this.width = width;
+    this.height = height;
+  }
+
+  someMethod() {
+    return this.width + this.height;
+  }
+}
+
+export default class MyRender extends Render {
   constructor(width, height, element, engine) {
     this.width = width;
     this.height = height;
@@ -13,8 +24,8 @@ class MyRender extends Render {
       element: this.element,
       engine: this.engine,
       options: {
-        width: containerWidth - 544,
-        height: containerHeight,
+        width: this.width,
+        height: this.height,
         wireframes: false,
         background: "transparent",
       },
