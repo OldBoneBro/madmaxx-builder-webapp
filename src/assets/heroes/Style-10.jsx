@@ -1,7 +1,7 @@
 import Navigatinon from "../navigation/Navigation.jsx"
 import ButtonPrimary from "../components/buttons/ButtonPrimary.jsx"
 import ButtonTertiary from "../components/buttons/ButtonTertiary.jsx"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import { Engine, Render,Bodies, Body, Mouse, MouseConstraint, Composite, Runner, Events, Collision, } from "matter-js"
 import { Particles, physifyRightSection } from "../physics/physifyRightSection.js"
 import { populateWithLetterAreas } from "../physics/populateWithLetterAreas.js"
@@ -55,7 +55,7 @@ export default function Style10() {
                 render: {
                     visible: false
                 }
-            }
+            } 
         })
 
         const walls = [
