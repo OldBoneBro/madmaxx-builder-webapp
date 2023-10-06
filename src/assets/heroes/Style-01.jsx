@@ -109,44 +109,50 @@ export default function Style01() {
             })
         ]
 
-        // const detect = Detector.create({
-        //     bodies: [
-        //         ...indicators,
-        //         testCircleA,
-        //         testCircleB,
-        //         testCircleC,
-        //     ],
-        // })
-
-        //console.log(testCircleA.collisionFilter, testCircleB.collisionFilter, testCircleC.collisionFilter, indicators[0].collisionFilter, indicators[1].collisionFilter)
+        const detect = Detector.create({
+            bodies: [
+                ...indicators,
+                ...testBodies,
+            ],
+        })
 
         const createConstraints = (bodies) =>  {
 
-            const bodiesCopy = new Array(...bodies)
-            let firstBody = bodiesCopy.shift()
-            console.log(firstBody)
+            const constraints = []
+            let prevBody = null
+            for(let i = 0; i < bodies.length; i++) {
+                if (prevBody === null) {
+                    prevBody = bodies[0]
+                    continue
+                }
+                constraints.push(
+                    Constraint.create({
+                        bodyA: prevBody,
+                        bodyB: bodies[i],
+                        length: 150,
+                        stiffness: 0.2,
+                    })
+                )
+                prevBody = bodies[i]
+            }
 
-            return bodiesCopy.reduce((prevBody, body) => {         
-                let constraint = Constraint.create({
-                    bodyA: prevBody,
-                    bodyB: body,
-                    length: 150,
-                    stiffness: 0.2,
-                })
-                console.log('before ', prevBody)
-                prevBody = body
-                console.log('after ', prevBody)
-                
-                return constraint
-            }, firstBody)
-
+            return constraints
+            
         }
 
-        console.log(createConstraints(testBodies))
+        const checkVerticalPosition = (indicator, collidedBody) => (collidedBody.position.y > indicator.position.y) && console.log(collidedBody.position.y - indicator.position.y)
+        const findShapeByLabel = (collision, shapeName) => collision.bodyA.label.includes(shapeName) || collision.bodyB.label.includes(shapeName)
 
-
-
+        const constraints = createConstraints(testBodies)
         Events.on(engine.current, 'beforeUpdate', () => {
+            Detector.collisions(detect).forEach(collision => {
+                if((collision.collided) && (findShapeByLabel("Rectangle"))) {
+                    let collidedCircle =  findShapeByLabel()
+                    let indicator  
+                    (!collision.bodyA.label.includes("Rectangle")) ? collidedCircle = collision.bodyA : indicator = collision.bodyB
+                    console.log(collidedCircle.label)
+                }
+            })    
         })
 
         Composite.add(engine.current.world, [
@@ -154,19 +160,7 @@ export default function Style01() {
             ...walls,
             ...indicators,
             mouseConstraint,
-            // Constraint.create({
-            //     bodyA: testBodies[0],
-            //     bodyB: testBodies[1],
-            //     length: 150,
-            //     stiffness: 0.2,
-            // }),
-            // Constraint.create({
-            //     bodyA: testBodies[1],
-            //     bodyB: testBodies[2],
-            //     length: 150,
-            //     stiffness: 0.2,
-            // })
-
+            ...constraints,
         ])
 
         Runner.run(engine.current)
