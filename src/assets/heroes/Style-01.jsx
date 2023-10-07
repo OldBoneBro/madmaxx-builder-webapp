@@ -93,15 +93,17 @@ export default function Style01() {
             })]
 
         const indicators = [
-            Bodies.rectangle(canvWidth / 2, 150, canvWidth - 100, 10, { 
+            Bodies.rectangle(canvWidth / 2, 170, canvWidth - 100, 10, { 
                 isStatic: true,
+                isSensor: true,
                 render: {
                     fillStyle: "#ff0000",
                     opacity: 0.5,
                 }
             }),
-            Bodies.rectangle(canvWidth / 2, canvHeight - 150, canvWidth - 100, 10, { 
+            Bodies.rectangle(canvWidth / 2, canvHeight - 170, canvWidth - 100, 10, { 
                 isStatic: true,
+                isSensor: true,
                 render: {
                     fillStyle: "#ff0000",
                     opacity: 0.5,
@@ -140,17 +142,29 @@ export default function Style01() {
             
         }
 
-        const checkVerticalPosition = (indicator, collidedBody) => (collidedBody.position.y > indicator.position.y) && console.log(collidedBody.position.y - indicator.position.y)
-        const findShapeByLabel = (collision, shapeName) => collision.bodyA.label.includes(shapeName) || collision.bodyB.label.includes(shapeName)
+        const verticalDelta = (indicator, collidedBody) => collidedBody.position.y - indicator.position.y
+        const shapeExists = (essence, shapeName) => essence.bodyA.label.includes(shapeName) || essence.bodyB.label.includes(shapeName)
+        const getReattachedConstraint = (constraint, label, attachingBody) => {
+            let attachingPoint = [constraint.bodyA, constraint.bodyB].find(body => !body.label.includes(label))
+            //console.log(attachingPoint)
+            attachingPoint = attachingBody
+            return constraint
+        }
 
         const constraints = createConstraints(testBodies)
+        let lastBody = testBodies[0]
         Events.on(engine.current, 'beforeUpdate', () => {
             Detector.collisions(detect).forEach(collision => {
-                if((collision.collided) && (findShapeByLabel("Rectangle"))) {
-                    let collidedCircle =  findShapeByLabel()
-                    let indicator  
-                    (!collision.bodyA.label.includes("Rectangle")) ? collidedCircle = collision.bodyA : indicator = collision.bodyB
-                    console.log(collidedCircle.label)
+                if((collision.collided) && (shapeExists(collision, "Rectangle"))) {
+                    let collidedCircle, indicator, circleConstraint
+                    collidedCircle = (!collision.bodyA.label.includes("Rectangle")) ? collision.bodyA : collision.bodyB
+                    indicator = (collision.bodyA.label.includes("Rectangle")) ? collision.bodyA : collision.bodyB
+                    circleConstraint = constraints.find(constraint => shapeExists(constraint, collidedCircle.label))
+                    if (verticalDelta(indicator, collidedCircle) < -50) { 
+                        Composite.remove(engine.current.world, [collidedCircle, circleConstraint])
+                        const reattachedConstraint = getReattachedConstraint(circleConstraint, collidedCircle.label, lastBody)
+                        //console.log(circleConstraint, reattachedConstraint)
+                    }
                 }
             })    
         })
