@@ -7,7 +7,7 @@ import { Engine, Render, Composite, Runner, Bodies, Mouse, MouseConstraint, Cons
 export default function Style01() {
 
     const canv = useRef(null)
-    const engine  = useRef(Engine.create({ gravity: {y: -0.2 } }))
+    const engine  = useRef(Engine.create({ gravity: {y: -0.2} }))
 
     useEffect(() => {
 
@@ -29,6 +29,7 @@ export default function Style01() {
             isStatic: false,
             friction: 0.5,
             restitution: 0.5,
+            mass: 10,
             label: "A",
             render: {
                 fillStyle: "#FF0000",
@@ -36,17 +37,16 @@ export default function Style01() {
                 
             },
             chamfer: { radius: 40}
-            
         }),
         Bodies.rectangle((canvWidth / 2) + 42, canvHeight / 2, 400, 400, {
             isStatic: false,
             friction: 0.5,
             restitution: 0.5,
+            mass: 10,
             label: "B",
             render: {
                 fillStyle: "#00FF00",
                 opacity: 0.5
-
             },
             chamfer: { radius: 40}
         }), 
@@ -54,6 +54,7 @@ export default function Style01() {
             isStatic: false,
             friction: 0.5,
             restitution: 0.5,
+            mass: 10,
             label: "C",
             render: {
                 fillStyle: "#0000FF",
@@ -61,6 +62,42 @@ export default function Style01() {
             },
             chamfer: { radius: 40}
         })]
+
+        const testBodiesBottom = [
+            Bodies.rectangle((canvWidth / 2) + 42, canvHeight + 400, 400, 400, {
+                isStatic: false,
+                friction: 0.5,
+                restitution: 0.5,
+                label: "A-bottom",
+                render: {
+                    fillStyle: "#000000",
+                    opacity: 0.5
+                },
+                chamfer: { radius: 40}
+            }),
+            Bodies.rectangle((canvWidth / 2) + 42, canvHeight + 823, 400, 400, {
+                isStatic: false,
+                friction: 0.5,
+                restitution: 0.5,
+                label: "B-bottom",
+                render: {
+                    fillStyle: "#000000",
+                    opacity: 0.5
+                },
+                chamfer: { radius: 40}
+            }), 
+            Bodies.rectangle((canvWidth / 2) + 42, canvHeight + 1223, 400, 400, {
+                isStatic: false,
+                friction: 0.5,
+                restitution: 0.5,
+                label: "C-bottom",
+                render: {
+                    fillStyle: "#000000",
+                    opacity: 0.5
+                },
+                chamfer: { radius: 40}
+            })
+        ]
 
         const myMouse = Mouse.create(canv.current)
         const mouseConstraint = MouseConstraint.create(engine.current, {
@@ -74,13 +111,13 @@ export default function Style01() {
         })
 
         const walls = [
-            Bodies.rectangle(canvWidth, canvHeight / 2, 100, canvHeight * 2, { 
+            Bodies.rectangle(canvWidth, canvHeight / 2, 100, canvHeight * 4, { 
                 isStatic: true,
                 render: {
                     fillStyle: "#fff",
                 }
             }),
-            Bodies.rectangle(0, canvHeight / 2, 100, canvHeight * 2, { 
+            Bodies.rectangle(0, canvHeight / 2, 100, canvHeight * 4, { 
                 isStatic: true,
                 render: {
                     fillStyle: "#000",
@@ -140,6 +177,16 @@ export default function Style01() {
             if ((bodyIndex !== -1) && (bodyIndex === 1)) constraint.bodyB = attachingBody
             return constraint
         }
+        const repositionBellow = (shape, ) => { 
+            let offscreenOffset = 200
+            Body.setPosition(shape, {x: (canvWidth / 2) + 42, y: canvHeight + offscreenOffset})
+            Body.setInertia(shape, 1)
+        }
+        const addToWorld = (body, bodies) => {
+            if (body.label.includes('C')) {
+                Composite.add(engine.current.world, [...bodies])
+            }
+        }
 
         const constraints = createConstraints(testBodies)
         let lastBody = testBodies[0]
@@ -150,12 +197,20 @@ export default function Style01() {
                     collidedCircle = (!collision.bodyA.label.includes("Rectangle")) ? collision.bodyA : collision.bodyB
                     indicator = (collision.bodyA.label.includes("Rectangle")) ? collision.bodyA : collision.bodyB
                     circleConstraint = constraints.find(constraint => shapeExists(constraint, collidedCircle.label))
-                    if (verticalDelta(indicator, collidedCircle) < -100) { 
+                    if (verticalDelta(indicator, collidedCircle) < -200) { 
                         Composite.remove(engine.current.world, [collidedCircle, circleConstraint])
-                        Body.setPosition(collidedCircle, {x: (canvWidth / 2) + 42, y: canvHeight - 19})
+                        repositionBellow(collidedCircle)
+                        Composite.add(engine.current.world, collidedCircle)
+                        console.log(collidedCircle)
                         const reattachedConstraint = getReattachedConstraint(circleConstraint, collidedCircle.label, lastBody)
                         Composite.add(engine.current.world, [collidedCircle, reattachedConstraint])
                         lastBody = collidedCircle
+                        //addToWorld(collidedCircle, testBodies)
+                        //Composite.add(engine.current.world, [...testBodiesBottom])
+                    //     Body.setPosition(collidedCircle, {x: (canvWidth / 2) + 42, y: canvHeight - 19})
+                    //     const reattachedConstraint = getReattachedConstraint(circleConstraint, collidedCircle.label, lastBody)
+                    //     Composite.add(engine.current.world, [collidedCircle, reattachedConstraint])
+                    //     lastBody = collidedCircle
                     }
                 }
             })    
