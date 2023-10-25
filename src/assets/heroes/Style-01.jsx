@@ -2,12 +2,12 @@ import Navigatinon from "../navigation/Navigation.jsx"
 import ButtonPrimary from "../components/buttons/ButtonPrimary.jsx"
 import ButtonTertiary from "../components/buttons/ButtonTertiary.jsx"
 import { useEffect, useRef } from "react"
-import { Engine, Render, Composite, Runner, Bodies, Mouse, MouseConstraint, Constraint, Events, Detector, Body, Collision } from "matter-js"
+import { Engine, Render, Composite, Runner, Bodies, Mouse, MouseConstraint, Constraint, Events, Body, Collision } from "matter-js"
 
 export default function Style01() {
 
     const canv = useRef(null)
-    const engine  = useRef(Engine.create({ gravity: {y: -0.2} }))
+    const engine  = useRef(Engine.create({ gravity: {y: -0.1} }))
 
     useEffect(() => {
 
@@ -24,43 +24,43 @@ export default function Style01() {
                 background: 'transparent',
             }
         })
-        const testBodies = [
-        Bodies.rectangle((canvWidth / 2) + 42, canvHeight - 19, 400, 400, {
-            isStatic: false,
-            friction: 0.5,
-            restitution: 0.5,
-            mass: 10,
-            inertia: Infinity,
-            label: "A",
-            render: {
-                fillStyle: "#1F1F1F",
-                
-            },
-            chamfer: { radius: 40}
-        }),
-        Bodies.rectangle((canvWidth / 2) + 42, canvHeight / 2, 400, 400, {
-            isStatic: false,
-            friction: 0.5,
-            restitution: 0.5,
-            mass: 10,
-            inertia: Infinity,
-            label: "B",
-            render: {
-                fillStyle: "#FFFFFF",
-            },
-            chamfer: { radius: 40}
-        }), 
-        Bodies.rectangle((canvWidth / 2) + 42, 19, 400, 400, {
-            isStatic: false,
-            friction: 0.5,
-            restitution: 0.5,
-            mass: 10,
-            inertia: Infinity,
-            label: "C",
-            render: {
-                fillStyle: "#1F1F1F",
-            },
-            chamfer: { radius: 40}
+
+        const roundedRectangles = [
+            Bodies.rectangle((canvWidth / 2) + 42, canvHeight - 19, 400, 400, {
+                isStatic: false,
+                friction: 0.5,
+                restitution: 0.5,
+                mass: 10,
+                inertia: Infinity,
+                label: "A",
+                render: {
+                    fillStyle: "#1F1F1F",
+                },
+                chamfer: { radius: 40}
+            }),
+            Bodies.rectangle((canvWidth / 2) + 42, canvHeight / 2, 400, 400, {
+                isStatic: false,
+                friction: 0.5,
+                restitution: 0.5,
+                mass: 10,
+                inertia: Infinity,
+                label: "B",
+                render: {
+                    fillStyle: "#FFFFFF",
+                },
+                chamfer: { radius: 40}
+            }), 
+            Bodies.rectangle((canvWidth / 2) + 42, 19, 400, 400, {
+                isStatic: false,
+                friction: 0.5,
+                restitution: 0.5,
+                mass: 10,
+                inertia: Infinity,
+                label: "C",
+                render: {
+                    fillStyle: "#1F1F1F",
+                },
+                chamfer: { radius: 40}
         })]
 
         const myMouse = Mouse.create(canv.current)
@@ -78,21 +78,29 @@ export default function Style01() {
             Bodies.rectangle(canvWidth, canvHeight / 2, 100, canvHeight * 4, { 
                 isStatic: true,
                 render: {
-                    fillStyle: "transparent",                }
+                    fillStyle: "transparent",
+                }
             }),
             Bodies.rectangle(0, canvHeight / 2, 100, canvHeight * 4, { 
                 isStatic: true,
                 render: {
                     fillStyle: "transparent",
                 }
+            }),
+            Bodies.rectangle(0, canvHeight * 3, canvWidth * 2, 100, { 
+                isStatic: true,
+                render: {
+                    fillStyle: "transparent",
+                }
             })]
-
-        const indicator = Bodies.rectangle(canvWidth / 2, 0, canvWidth - 100, 10, { 
+            
+        const indicator = Bodies.rectangle(canvWidth / 2, -500, canvWidth - 100, 100, { 
                 isStatic: true,
                 isSensor: true,
                 render: {
-                    fillStyle: "transparent",                }
-            })
+                    fillStyle: "#00FF00",                
+                }
+        })
 
         const createConstraints = (bodies) =>  {
 
@@ -109,6 +117,9 @@ export default function Style01() {
                         bodyB: bodies[i],
                         length: 432,
                         stiffness: 0.2,
+                        render: {
+                            visible: false,
+                        }
                     })
                 )
                 prevBody = bodies[i]
@@ -118,7 +129,6 @@ export default function Style01() {
             
         }
 
-        const verticalDelta = (indicator, collidedBody) => collidedBody.position.y - indicator.position.y
         const repositionBellow = (shape) => {
 
             let offscreenOffset
@@ -132,7 +142,6 @@ export default function Style01() {
                 case 'A':
                     offscreenOffset = 1223
                     break
-
             }
 
             Body.setPosition(shape, {x: (canvWidth / 2) + 42, y: canvHeight + offscreenOffset})
@@ -144,17 +153,17 @@ export default function Style01() {
 
         }
 
-        const constraints = createConstraints(testBodies)
+        const constraints = createConstraints(roundedRectangles)
         Events.on(engine.current, 'beforeUpdate', () => {
-            if((Collision.collides(indicator, testBodies[0])?.collided) && (verticalDelta(indicator, testBodies[0]) <= -200)) {
-                Composite.remove(engine.current.world, [...constraints, ...testBodies])
-                testBodies.forEach((body) => repositionBellow(body))
-                Composite.add(engine.current.world, [...constraints, ...testBodies])
+            if((Collision.collides(indicator, roundedRectangles[0])?.collided)) {
+                Composite.remove(engine.current.world, [...constraints, ...roundedRectangles])
+                roundedRectangles.forEach((body) => repositionBellow(body))
+                Composite.add(engine.current.world, [...constraints, ...roundedRectangles])
             }
         })
 
         Composite.add(engine.current.world, [
-            ...testBodies,  
+            ...roundedRectangles,  
             ...walls,
             indicator,
             mouseConstraint,
@@ -187,11 +196,6 @@ export default function Style01() {
                         <ButtonPrimary width="w-[8.875rem]" />
                         <ButtonTertiary width="w-[8.875rem]" />
                     </div>
-                </div>
-                <div className="flex flex-col items-start gap-8 absolute right-40 top-[-182px]">
-                    <div className="w-[25rem] h-[25rem] rounded-[2.5rem] bg-[#1F1F1F]"></div>
-                    <div className="w-[25rem] h-[25rem] rounded-[2.5rem] bg-white"></div>
-                    <div className="w-[25rem] h-[25rem] rounded-[2.5rem] bg-[#1F1F1F]"></div>
                 </div>
             </div>
         </div>
