@@ -3,6 +3,7 @@ import ButtonPrimary from "../components/buttons/ButtonPrimary.jsx"
 import ButtonTertiary from "../components/buttons/ButtonTertiary.jsx"
 import { useEffect, useRef } from "react"
 import { Engine, Render, Composite, Runner, Bodies, Mouse, MouseConstraint, Constraint, Events, Body, Collision } from "matter-js"
+import { reposition } from "../physics/reposition.js"
 
 export default function Style01() {
 
@@ -25,8 +26,11 @@ export default function Style01() {
             }
         })
 
+        const width = 400
+        const height = 400
+
         const roundedRectangles = [
-            Bodies.rectangle((canvWidth / 2) + 42, canvHeight - 19, 400, 400, {
+            Bodies.rectangle((canvWidth / 2) + 42, canvHeight - 19, width, height, {
                 isStatic: false,
                 friction: 0.5,
                 restitution: 0.5,
@@ -36,9 +40,11 @@ export default function Style01() {
                 render: {
                     fillStyle: "#1F1F1F",
                 },
-                chamfer: { radius: 40}
+                chamfer: { radius: 40},
+                width: width,
+                height: height,
             }),
-            Bodies.rectangle((canvWidth / 2) + 42, canvHeight / 2, 400, 400, {
+            Bodies.rectangle((canvWidth / 2) + 42, canvHeight / 2, width, height, {
                 isStatic: false,
                 friction: 0.5,
                 restitution: 0.5,
@@ -48,9 +54,11 @@ export default function Style01() {
                 render: {
                     fillStyle: "#FFFFFF",
                 },
-                chamfer: { radius: 40}
+                chamfer: { radius: 40},
+                width: width,
+                height: height,
             }), 
-            Bodies.rectangle((canvWidth / 2) + 42, 19, 400, 400, {
+            Bodies.rectangle((canvWidth / 2) + 42, 19, width, height, {
                 isStatic: false,
                 friction: 0.5,
                 restitution: 0.5,
@@ -60,7 +68,9 @@ export default function Style01() {
                 render: {
                     fillStyle: "#1F1F1F",
                 },
-                chamfer: { radius: 40}
+                chamfer: { radius: 40},
+                width: width,
+                height: height,
         })]
 
         const myMouse = Mouse.create(canv.current)
@@ -129,35 +139,11 @@ export default function Style01() {
             
         }
 
-        const repositionBellow = (shape) => {
-
-            let offscreenOffset
-            switch (shape.label) {
-                case 'C':
-                    offscreenOffset = 400
-                    break
-                case 'B':
-                    offscreenOffset = 823
-                    break
-                case 'A':
-                    offscreenOffset = 1223
-                    break
-            }
-
-            Body.setPosition(shape, {x: (canvWidth / 2) + 42, y: canvHeight + offscreenOffset})
-            Body.setInertia(shape, Infinity)
-            Body.setSpeed(shape, 0)
-            Body.setVelocity(shape, {x: 0, y: 0})
-            Body.setAngularSpeed(shape, 0)
-            Body.setVelocity(shape, {x: 0, y: 0})
-
-        }
-
         const constraints = createConstraints(roundedRectangles)
         Events.on(engine.current, 'beforeUpdate', () => {
             if((Collision.collides(indicator, roundedRectangles[0])?.collided)) {
                 Composite.remove(engine.current.world, [...constraints, ...roundedRectangles])
-                roundedRectangles.forEach((body) => repositionBellow(body))
+                roundedRectangles.forEach((body) => reposition(body))
                 Composite.add(engine.current.world, [...constraints, ...roundedRectangles])
             }
         })
