@@ -3,6 +3,7 @@ import ButtonPrimary from "../components/buttons/ButtonPrimary.jsx"
 import ButtonTertiary from "../components/buttons/ButtonTertiary.jsx"
 import { Engine, Render, Composite, Runner, Bodies, Mouse, MouseConstraint, Constraint, Events, Body, Collision } from "matter-js"
 import { useEffect, useRef } from "react"
+import { reposition } from "../physics/reposition.js"
 
 
 export default function Style04() {
@@ -27,7 +28,7 @@ export default function Style04() {
         })
 
         const walls = [
-            Bodies.rectangle(canvWidth + 60, canvHeight / 2, 100, canvHeight * 4, { 
+            Bodies.rectangle(canvWidth + 100, canvHeight / 2, 100, canvHeight * 4, { 
                 isStatic: true,
                 render: {
                     fillStyle: "#00FF00",
@@ -67,8 +68,11 @@ export default function Style04() {
             }),       
         ]
 
-        const roundedRectangles = [
-            Bodies.rectangle((canvWidth / 2) + 41.5, 799, 240, 240, {
+        const width = 240
+        const height = 240
+
+        const roundedRectanglesUp = [
+            Bodies.rectangle((canvWidth / 2) + 41.5, 799, width, height, {
                 isStatic: false,
                 friction: 0.5,
                 restitution: 0.5,
@@ -79,9 +83,11 @@ export default function Style04() {
                     fillStyle: "#3fd977",
                     opacity: 0.75,
                 },
-                chamfer: { radius: 40}
+                chamfer: { radius: 40},
+                width: width,
+                height: height,
             }),
-            Bodies.rectangle((canvWidth / 2) + 41.5, 512, 240, 240, {
+            Bodies.rectangle((canvWidth / 2) + 41.5, 512, width, height, {
                 isStatic: false,
                 friction: 0.5,
                 restitution: 0.5,
@@ -92,9 +98,11 @@ export default function Style04() {
                     fillStyle: "#3fd977",
                     opacity: 0.75,
                 },
-                chamfer: { radius: 40}
+                chamfer: { radius: 40},
+                width: width,
+                height: height,
             }), 
-            Bodies.rectangle((canvWidth / 2) + 41.5, 224, 240, 240, {
+            Bodies.rectangle((canvWidth / 2) + 41.5, 224, width, height, {
                 isStatic: false,
                 friction: 0.5,
                 restitution: 0.5,
@@ -105,9 +113,11 @@ export default function Style04() {
                     fillStyle: "#3fd977",
                     opacity: 0.75,
                 },
-                chamfer: { radius: 40}
+                chamfer: { radius: 40},
+                width: width,
+                height: height,
             }),
-            Bodies.rectangle((canvWidth / 2) + 41.2, -63, 240, 240, {
+            Bodies.rectangle((canvWidth / 2) + 41.2, -63, width, height, {
                 isStatic: false,
                 friction: 0.5,
                 restitution: 0.5,
@@ -118,7 +128,72 @@ export default function Style04() {
                     fillStyle: "#3fd977",
                     opacity: 0.5,
                 },
-                chamfer: { radius: 40}
+                chamfer: { radius: 40},
+                width: width,
+                height: height,
+            })
+        ]
+
+        const roundedRectanglesDown = [
+            Bodies.rectangle((canvWidth / 2) + 329, 960, width, height, {
+                isStatic: false,
+                friction: 0.5,
+                restitution: 0.5,
+                mass: 10,
+                inertia: Infinity,
+                label: "A",
+                render: {
+                    fillStyle: "#3fd977",
+                    opacity: 0.75,
+                },
+                chamfer: { radius: 40},
+                width: width,
+                height: height,
+            }),
+            Bodies.rectangle((canvWidth / 2) + 329, 672, width, height, {
+                isStatic: false,
+                friction: 0.5,
+                restitution: 0.5,
+                mass: 10,
+                inertia: Infinity,
+                label: "B",
+                render: {
+                    fillStyle: "#3fd977",
+                    opacity: 0.75,
+                },
+                chamfer: { radius: 40},
+                width: width,
+                height: height,
+            }), 
+            Bodies.rectangle((canvWidth / 2) + 329, 384, width, height, {
+                isStatic: false,
+                friction: 0.5,
+                restitution: 0.5,
+                mass: 10,
+                inertia: Infinity,
+                label: "C",
+                render: {
+                    fillStyle: "#3fd977",
+                    opacity: 0.75,
+                },
+                chamfer: { radius: 40},
+                width: width,
+                height: height,
+            }),
+            Bodies.rectangle((canvWidth / 2) + 329, 96, width, height, {
+                isStatic: false,
+                friction: 0.5,
+                restitution: 0.5,
+                mass: 10,
+                inertia: Infinity,
+                label: "D",
+                render: {
+                    fillStyle: "#3fd977",
+                    opacity: 0.5,
+                },
+                chamfer: { radius: 40},
+                width: width,
+                height: height,
             })
         ]
 
@@ -161,21 +236,32 @@ export default function Style04() {
         })
 
         //Body.applyForce(bodyB, bodyB.position, {x: 0, y: -0.011})
+        const constraintsUp = createConstraints(roundedRectanglesUp)
+        const constraintsDown = createConstraints(roundedRectanglesDown)
 
         Events.on(engine.current, 'beforeUpdate', () => {
-            roundedRectangles.forEach(rectangle => {
-                Body.applyForce(rectangle, rectangle.position, {x: 0, y: -0.011})
-            })
+            roundedRectanglesUp.forEach(rectangle => Body.applyForce(rectangle, rectangle.position, {x: 0, y: -0.011}))
+            roundedRectanglesDown.forEach(rectangle => Body.applyForce(rectangle, rectangle.position, {x: 0, y: -0.0090}))
+            if((Collision.collides(indicators[0], roundedRectanglesUp[0])?.collided)) {
+                Composite.remove(engine.current.world, [...constraintsUp, ...roundedRectanglesUp])
+                roundedRectanglesUp.forEach((body) => reposition(canvWidth, canvHeight, 41.5, body))
+                Composite.add(engine.current.world, [...constraintsUp, ...roundedRectanglesUp])
+            }
+            if((Collision.collides(indicators[1], roundedRectanglesDown[roundedRectanglesDown.length - 1])?.collided)) {
+                Composite.remove(engine.current.world, [...constraintsDown, ...roundedRectanglesDown])
+                roundedRectanglesDown.forEach((body) => reposition(canvWidth, canvHeight, 329, body, true))
+                Composite.add(engine.current.world, [...constraintsDown, ...roundedRectanglesDown])
+            }
+
         })
-
-
-        const constraints = createConstraints(roundedRectangles)
 
         Composite.add(engine.current.world, [
             ...walls,
             ...indicators,
-            ...roundedRectangles,
-            ...constraints,
+            ...roundedRectanglesUp,
+            ...roundedRectanglesDown,
+            ...constraintsUp,
+            ...constraintsDown,
             mouseConstraint,
         ])
 
