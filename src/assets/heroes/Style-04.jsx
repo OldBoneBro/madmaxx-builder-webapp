@@ -31,39 +31,36 @@ export default function Style04() {
             Bodies.rectangle(canvWidth + 100, canvHeight / 2, 100, canvHeight * 4, { 
                 isStatic: true,
                 render: {
-                    fillStyle: "#00FF00",
+                    fillStyle: "transparent",
                 }
             }),
             Bodies.rectangle(58, canvHeight / 2, 500, canvHeight * 4, { 
                 isStatic: true,
                 render: {
-                    fillStyle: "#FF0000",
+                    fillStyle: "transparent",
                 }
             }),
-            Bodies.rectangle(587, canvHeight / 2, 24, canvHeight * 4, { 
+            Bodies.rectangle(0, canvHeight * 3, canvWidth * 2, 100, { 
                 isStatic: true,
                 render: {
-                    fillStyle: "#0000FF",
-                    opacity: 0.5,
+                    fillStyle: "transparent",
                 }
             })
         ]
 
         const indicators = [
-            Bodies.rectangle(canvWidth / 2, 0, canvWidth + 60, 100, { 
+            Bodies.rectangle(canvWidth / 2, -280, canvWidth + 100, 100, { 
                 isStatic: true,
                 isSensor: true,
                 render: {
-                    fillStyle: "#398902",
-                    opacity: 0.5,                
+                    fillStyle: "transparent",
                 }
             }),
-            Bodies.rectangle(canvWidth / 2, canvHeight, canvWidth + 60, 100, { 
+            Bodies.rectangle(canvWidth / 2, canvHeight + 280, canvWidth + 100, 100, { 
                 isStatic: true,
                 isSensor: true,
                 render: {
-                    fillStyle: "#283378",
-                    opacity: 0.5,                
+                    fillStyle: "transparent",
                 }
             }),       
         ]
@@ -80,8 +77,7 @@ export default function Style04() {
                 inertia: Infinity,
                 label: "A",
                 render: {
-                    fillStyle: "#3fd977",
-                    opacity: 0.75,
+                    fillStyle: "#1F1F1F",
                 },
                 chamfer: { radius: 40},
                 width: width,
@@ -95,8 +91,7 @@ export default function Style04() {
                 inertia: Infinity,
                 label: "B",
                 render: {
-                    fillStyle: "#3fd977",
-                    opacity: 0.75,
+                    fillStyle: "#FFFFFF",
                 },
                 chamfer: { radius: 40},
                 width: width,
@@ -110,8 +105,7 @@ export default function Style04() {
                 inertia: Infinity,
                 label: "C",
                 render: {
-                    fillStyle: "#3fd977",
-                    opacity: 0.75,
+                    fillStyle: "#FFFFFF",
                 },
                 chamfer: { radius: 40},
                 width: width,
@@ -125,8 +119,7 @@ export default function Style04() {
                 inertia: Infinity,
                 label: "D",
                 render: {
-                    fillStyle: "#3fd977",
-                    opacity: 0.5,
+                    fillStyle: "#1F1F1F",
                 },
                 chamfer: { radius: 40},
                 width: width,
@@ -143,8 +136,7 @@ export default function Style04() {
                 inertia: Infinity,
                 label: "A",
                 render: {
-                    fillStyle: "#3fd977",
-                    opacity: 0.75,
+                    fillStyle: "#FFFFFF",
                 },
                 chamfer: { radius: 40},
                 width: width,
@@ -158,8 +150,7 @@ export default function Style04() {
                 inertia: Infinity,
                 label: "B",
                 render: {
-                    fillStyle: "#3fd977",
-                    opacity: 0.75,
+                    fillStyle: "#1F1F1F",
                 },
                 chamfer: { radius: 40},
                 width: width,
@@ -173,8 +164,7 @@ export default function Style04() {
                 inertia: Infinity,
                 label: "C",
                 render: {
-                    fillStyle: "#3fd977",
-                    opacity: 0.75,
+                    fillStyle: "#FFFFFF",
                 },
                 chamfer: { radius: 40},
                 width: width,
@@ -188,8 +178,7 @@ export default function Style04() {
                 inertia: Infinity,
                 label: "D",
                 render: {
-                    fillStyle: "#3fd977",
-                    opacity: 0.5,
+                    fillStyle: "#FFFFFF",
                 },
                 chamfer: { radius: 40},
                 width: width,
@@ -213,7 +202,7 @@ export default function Style04() {
                         length: 288,
                         stiffness: 0.2,
                         render: {
-                            visible: true,
+                            visible: false,
                         }
                     })
                 )
@@ -235,13 +224,12 @@ export default function Style04() {
             }
         })
 
-        //Body.applyForce(bodyB, bodyB.position, {x: 0, y: -0.011})
         const constraintsUp = createConstraints(roundedRectanglesUp)
         const constraintsDown = createConstraints(roundedRectanglesDown)
 
         Events.on(engine.current, 'beforeUpdate', () => {
             roundedRectanglesUp.forEach(rectangle => Body.applyForce(rectangle, rectangle.position, {x: 0, y: -0.011}))
-            roundedRectanglesDown.forEach(rectangle => Body.applyForce(rectangle, rectangle.position, {x: 0, y: -0.0090}))
+            roundedRectanglesDown.forEach(rectangle => Body.setVelocity(rectangle, {x: rectangle.velocity.x, y: -0.0035}))
             if((Collision.collides(indicators[0], roundedRectanglesUp[0])?.collided)) {
                 Composite.remove(engine.current.world, [...constraintsUp, ...roundedRectanglesUp])
                 roundedRectanglesUp.forEach((body) => reposition(canvWidth, canvHeight, 41.5, body))
@@ -249,10 +237,9 @@ export default function Style04() {
             }
             if((Collision.collides(indicators[1], roundedRectanglesDown[roundedRectanglesDown.length - 1])?.collided)) {
                 Composite.remove(engine.current.world, [...constraintsDown, ...roundedRectanglesDown])
-                roundedRectanglesDown.forEach((body) => reposition(canvWidth, canvHeight, 329, body, true))
+                roundedRectanglesDown.forEach((body) => reposition(canvWidth, canvHeight, 330, body, true))
                 Composite.add(engine.current.world, [...constraintsDown, ...roundedRectanglesDown])
             }
-
         })
 
         Composite.add(engine.current.world, [
@@ -293,7 +280,7 @@ export default function Style04() {
                         <ButtonTertiary width="w-[8.875rem]" />
                     </div>
                 </div>
-                <div className="flex flex-col items-start gap-12 absolute right-[16.66%] top-[-20.42%]">
+                {/* <div className="flex flex-col items-start gap-12 absolute right-[16.66%] top-[-20.42%]">
                     <div className="w-[15rem] h-[15rem] rounded-[2.5rem] bg-[#1F1F1F]"></div>
                     <div className="w-[15rem] h-[15rem] rounded-[2.5rem] bg-white"></div>
                     <div className="w-[15rem] h-[15rem] rounded-[2.5rem] bg-white"></div>
@@ -304,7 +291,7 @@ export default function Style04() {
                     <div className="w-[15rem] h-[15rem] rounded-[2.5rem] bg-[#1F1F1F]"></div>
                     <div className="w-[15rem] h-[15rem] rounded-[2.5rem] bg-white"></div>
                     <div className="w-[15rem] h-[15rem] rounded-[2.5rem] bg-white"></div>
-                </div>
+                </div> */}
             </div>
         </div>
         
