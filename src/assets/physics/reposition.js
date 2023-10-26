@@ -5,32 +5,30 @@ export const reposition = (
   height,
   widthOffset,
   shape,
-  substract = false
+  goingDown = false
 ) => {
   let offscreenOffset;
   switch (shape.label) {
     case "D":
-      offscreenOffset = 263;
+      offscreenOffset = goingDown ? 999 : 263;
       break;
     case "C":
-      offscreenOffset = shape.width === 400 ? 400 : 424;
+      offscreenOffset = shape.width === 400 ? 400 : goingDown ? 712 : 424;
       break;
     case "B":
-      offscreenOffset = shape.width === 400 ? 823 : 712;
+      offscreenOffset = shape.width === 400 ? 823 : goingDown ? 424 : 712;
       break;
     case "A":
-      offscreenOffset = shape.width === 400 ? 1223 : 999;
+      offscreenOffset = shape.width === 400 ? 1223 : goingDown ? 263 : 999;
       break;
   }
 
   let newWidth = width / 2;
-  let newHeight = substract
-    ? height - offscreenOffset
-    : height + offscreenOffset;
+  let newHeight = goingDown ? 0 - offscreenOffset : height + offscreenOffset;
 
   Body.setPosition(shape, {
     x: newWidth + widthOffset,
-    y: height + offscreenOffset,
+    y: newHeight,
   });
   Body.setInertia(shape, Infinity);
   Body.setSpeed(shape, 0);
