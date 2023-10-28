@@ -2,14 +2,13 @@ import Navigatinon from "../navigation/Navigation.jsx"
 import ButtonPrimary from "../components/buttons/ButtonPrimary.jsx"
 import ButtonTertiary from "../components/buttons/ButtonTertiary.jsx"
 import { useState, useRef } from "react"
+import { getElementMidPoint } from "../../utils/getElementMidPoint.js"
 
 export default function Style08() { 
 
     const [translation, setTranslation] = useState('')
     const midPoint = useRef(720)
     const clickedElems = useRef(null)
-
-    const getElementMidPoint = (elem) => elem.offsetLeft + (elem.offsetWidth / 2)
 
     const handleClick = (event) => {
         
