@@ -14,6 +14,7 @@ const objEmpty = (obj) => {
 export default function Style09() {
 
     const [vidStyle, setVidStyle] = useState({})
+    const [vidStyleMid, setVidStyleMid] = useState(false)
     const clickedElems = useRef(null)
     const midElementMidPoint = useRef(461.5)
 
@@ -21,28 +22,48 @@ export default function Style09() {
 
         const sameElement = clickedElems.current === event.target
         const greaterThanMidPoint = getElementMidPoint(event.target) > midElementMidPoint.current
-        console.log(getElementMidPoint(event.target))
 
         if(!sameElement) { 
             setVidStyle({
+                position: "absolute",
                 bgColor: '#FF0000',
-                xScale: '1.59',
-                yScale: '1.345',
+                width: '731px',
+                height: '411px',
                 zIndex: '10',
                 opacity: '0.5',
-                translate: '230.4px',
-                borderRadius: '32px'
+                translate: '96px',
+            })
+            setVidStyleMid({
+                position: 'static',
+                bgColor: '#00FF00',
+                width: '548px',
+                height: '308px',
+                zIndex: '1',
+                opacity: '0.5',
+                translate: '496px',
+                hidden: "true"
             })
         } else {
             setVidStyle({
+                position: 'static',
                 bgColor: '#1F1F1F',
-                xScale: '1',
-                yScale: '1',
+                width: '548px',
+                height: '308px',
                 zIndex: '0',
                 opacity: '1',
                 translate: '0px',
-                borderRadius: '40px'
             })
+            setVidStyleMid({
+                position: "absolute",
+                bgColor: '#FFFFFF',
+                width: '731px',
+                height: '411px',
+                zIndex: '10',
+                opacity: '1',
+                translate: '96px',
+                hidden: "false"
+            })
+
         }
 
         clickedElems.current = (sameElement) ? null : event.target
@@ -62,20 +83,38 @@ export default function Style09() {
                 <div className=" relative flex w-[57.6875rem] h-[25.6875rem] items-center">
                     {(objEmpty(vidStyle)) ? 
                         <div className="w-[34.25rem] h-[19.25rem] rounded-[2.5rem] bg-[#1F1F1F] transition-all" onClick={handleClick} ></div> : 
-                        <div className="w-[34.25rem] h-[19.25rem] rounded-[2.5rem] bg-[#1F1F1F] transition-all" onClick={handleClick} style={{ 
+                        <div className="rounded-[2.5rem] bg-[#1F1F1F] transition-all" onClick={handleClick} style={{ 
+                            position: vidStyle.position,
                             backgroundColor: vidStyle.bgColor, 
-                            transform: `scale(${vidStyle.xScale}, ${vidStyle.yScale})`,
+                            width: vidStyle.width,
+                            height: vidStyle.height,
                             zIndex: vidStyle.zIndex,
                             opacity: vidStyle.opacity,
                             translate: vidStyle.translate,
-                            borderRadius: vidStyle.borderRadius,
                         }}></div>}
                     {/* absolute left-24 */}
-                    <div className="flex w-[45.6875rem] h-[25.6875rem] justify-center items-center rounded-[2.5rem] bg-white" >
-                        <div className="flex justify-center items-center w-[6.5rem] h-[6.5rem] rounded-full bg-size-200 transition-all bg-pos-0 hover:bg-pos-100 bg-gradient-135 from-[#00EA87] via-[#78CBFF] to-[#4510ca]">
-                            <PlaySvg width="44.373" height="44.373" defaultColorScheme={false}  />
-                        </div>
-                    </div>
+                    {(objEmpty(vidStyleMid)) ?
+                        <div className="absolute left-24 flex w-[45.6875rem] h-[25.6875rem] justify-center items-center rounded-[2.5rem] bg-white transition-all" >
+                            <div className="flex justify-center items-center w-[6.5rem] h-[6.5rem] rounded-full bg-size-200 transition-all bg-pos-0 hover:bg-pos-100 bg-gradient-135 from-[#00EA87] via-[#78CBFF] to-[#4510ca]">
+                                <PlaySvg width="44.373" height="44.373" defaultColorScheme={false}  />
+                            </div>
+                        </div> :
+                        <div className="justify-center items-center rounded-[2.5rem] bg-white transition-all"style={{
+                            position: vidStyleMid.position,
+                            backgroundColor: vidStyleMid.bgColor, 
+                            width: vidStyleMid.width,
+                            height: vidStyleMid.height,
+                            zIndex: vidStyleMid.zIndex,
+                            opacity: vidStyleMid.opacity,
+                            translate: vidStyleMid.translate,
+                        }} >
+                            {
+                                (!vidStyleMid.hidden) ? <div className="flex justify-center items-center w-[6.5rem] h-[6.5rem] rounded-full bg-size-200 transition-all bg-pos-0 hover:bg-pos-100 bg-gradient-135 from-[#00EA87] via-[#78CBFF] to-[#4510ca]">
+                                    <PlaySvg width="44.373" height="44.373" defaultColorScheme={false}  />
+                                </div> : ''
+                            }
+                        </div> 
+                    }
                     <div className="w-[34.25rem] h-[19.25rem] rounded-[2.5rem] bg-[#1F1F1F] hover:bg-[#FF0000] hover:scale-x-[1.59] hover:scale-y-[1.345] hover:z-10 hover:opacity-50 hover:-translate-x-[14.4rem] hover:rounded-[2rem] transition-all hover:transition-all"></div>
                 </div>
             </div>
