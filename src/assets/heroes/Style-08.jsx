@@ -41,7 +41,6 @@ export default function Style08() {
                     <div className="w-[36.125rem] h-[20.3125rem] rounded-[2.5rem] hover:transition-colors hover:bg-white bg-[#1F1F1F]" onClick={handleClick} id="slide-3"></div>
                 </div>
             </div>
-
         </div>
 
     )
