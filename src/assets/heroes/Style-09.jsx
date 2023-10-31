@@ -3,9 +3,6 @@ import { PlaySvg }  from "../imgs/svgs/components/Play.jsx"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { getVidStyles } from "../inline-styles/vidStyles.js"
 import { gsap } from "gsap"
-import { MotionPathPlugin } from "gsap/MotionPathPlugin"
-
-gsap.registerPlugin(MotionPathPlugin)
 
 const objEmpty = (obj) => {
     for (const prop in obj) {
@@ -25,20 +22,21 @@ export default function Style09() {
     const right = useRef(null)
     const clickedElem = useRef(null)
     const playButton = useRef(null)
-    const animationPath = useRef(null)
 
     useLayoutEffect(() => {
 
-        let ctx = gsap.context(() => {gsap.to(playButton.current, {
-            duration: 3,
-            ease: 'none',
-            motionPath: {
-                path: animationPath.current,
-                align: animationPath.current,
-                alignOrigin: [0.5, 0.5],
-                autoRotate: true,
-            }
-        })})
+        let ctx = gsap.context(() => {
+            gsap.from(playButton.current, {
+                duration: 0.25,
+                ease: 'none',
+                visibility: 1,
+            })
+            gsap.to(playButton.current, {
+                duration: 0.25,
+                ease: 'none',
+                height: 0,
+            })
+        })
 
         return () => ctx.revert()
 
@@ -72,9 +70,6 @@ export default function Style09() {
                     <div className="absolute z-[9998] flex justify-center items-center w-[6.5rem] h-[6.5rem] rounded-full bg-size-200 transition-all bg-pos-0 hover:bg-pos-100 bg-gradient-135 from-[#00EA87] via-[#78CBFF] to-[#4510ca]" ref={playButton}>
                         <PlaySvg width="44.373" height="44.373" defaultColorScheme={false}  />
                     </div>
-                    <svg className="absolute z-[9999] left-[114px] top-[-228px]" width="349" height="475" viewBox="0 0 349 475" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path ref={animationPath} d="M348.5 433.5C129 552 -75.5 415.5 28.5 0.5" stroke="black"/>
-                    </svg>
                     {
                         (objEmpty(vidLeft)) ? 
                             <div className="flex justify-center items-center w-[34.25rem] h-[19.25rem] rounded-[2.5rem] bg-[#1F1F1F] transition-all ease-in-out" onClick={handleClick} ref={left}></div> : 
