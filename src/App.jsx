@@ -1,8 +1,8 @@
-import ThemeToggler from "./assets/components/buttons/ThemeToggler.jsx"
+import Variant01 from "./assets/pages/Variant01.jsx"
 
 function App() {
   return (
-      <ThemeToggler />
+      <Variant01 />
   )
 }
 
