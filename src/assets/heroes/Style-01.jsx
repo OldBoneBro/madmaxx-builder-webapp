@@ -4,6 +4,7 @@ import ButtonTertiary from "../components/buttons/ButtonTertiary.jsx"
 import { useEffect, useRef } from "react"
 import { Engine, Render, Composite, Runner, Bodies, Mouse, MouseConstraint, Constraint, Events, Collision } from "matter-js"
 import { reposition } from "../physics/reposition.js"
+import { createConstraints } from "../physics/createConstraints.js"
 
 export default function Style01() {
 
@@ -112,41 +113,17 @@ export default function Style01() {
                 }
         })
 
-        const createConstraints = (bodies) =>  {
-
-            const constraints = []
-            let prevBody = null
-            for(let i = 0; i < bodies.length; i++) {
-                if (prevBody === null) {
-                    prevBody = bodies[0]
-                    continue
-                }
-                constraints.push(
-                    Constraint.create({
-                        bodyA: prevBody,
-                        bodyB: bodies[i],
-                        length: 432,
-                        stiffness: 0.2,
-                        render: {
-                            visible: false,
-                        }
-                    })
-                )
-                prevBody = bodies[i]
-            }
-
-            return constraints
-            
-        }
-
-        const constraints = createConstraints(roundedRectangles)
+        const constraints = createConstraints(roundedRectangles, 433)
         Events.on(engine.current, 'beforeUpdate', () => {
             if((Collision.collides(indicator, roundedRectangles[0])?.collided)) {
                 Composite.remove(engine.current.world, [...constraints, ...roundedRectangles])
-                roundedRectangles.forEach((body) => reposition(body))
+                roundedRectangles.forEach((body) => reposition(canvWidth, canvHeight, 41.5, body))
                 Composite.add(engine.current.world, [...constraints, ...roundedRectangles])
             }
         })
+
+        mouseConstraint.mouse.element.removeEventListener('mousewheel', mouseConstraint.mouse.mousewheel)
+        mouseConstraint.mouse.element.removeEventListener('DOMMouseScroll', mouseConstraint.mouse.mousewheel)
 
         Composite.add(engine.current.world, [
             ...roundedRectangles,  

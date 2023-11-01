@@ -4,6 +4,7 @@ import ButtonTertiary from "../components/buttons/ButtonTertiary.jsx"
 import { Engine, Render, Composite, Runner, Bodies, Mouse, MouseConstraint, Constraint, Events, Body, Collision } from "matter-js"
 import { useEffect, useRef } from "react"
 import { reposition } from "../physics/reposition.js"
+import { createConstraints } from "../physics/createConstraints.js"
 
 
 export default function Style04() {
@@ -186,33 +187,6 @@ export default function Style04() {
             })
         ]
 
-        const createConstraints = (bodies) =>  {
-
-            const constraints = []
-            let prevBody = null
-            for(let i = 0; i < bodies.length; i++) {
-                if (prevBody === null) {
-                    prevBody = bodies[0]
-                    continue
-                }
-                constraints.push(
-                    Constraint.create({
-                        bodyA: prevBody,
-                        bodyB: bodies[i],
-                        length: 288,
-                        stiffness: 0.2,
-                        render: {
-                            visible: false,
-                        }
-                    })
-                )
-                prevBody = bodies[i]
-            }
-
-            return constraints
-            
-        }
-
         const myMouse = Mouse.create(canv.current)
         const mouseConstraint = MouseConstraint.create(engine.current, {
             mouse: myMouse,
@@ -224,8 +198,8 @@ export default function Style04() {
             }
         })
 
-        const constraintsUp = createConstraints(roundedRectanglesUp)
-        const constraintsDown = createConstraints(roundedRectanglesDown)
+        const constraintsUp = createConstraints(roundedRectanglesUp, 288)
+        const constraintsDown = createConstraints(roundedRectanglesDown, 288)
 
         Events.on(engine.current, 'beforeUpdate', () => {
             roundedRectanglesUp.forEach(rectangle => Body.applyForce(rectangle, rectangle.position, {x: 0, y: -0.011}))
@@ -241,6 +215,9 @@ export default function Style04() {
                 Composite.add(engine.current.world, [...constraintsDown, ...roundedRectanglesDown])
             }
         })
+
+        mouseConstraint.mouse.element.removeEventListener('mousewheel', mouseConstraint.mouse.mousewheel)
+        mouseConstraint.mouse.element.removeEventListener('DOMMouseScroll', mouseConstraint.mouse.mousewheel)
 
         Composite.add(engine.current.world, [
             ...walls,
