@@ -1,8 +1,8 @@
-import Style09 from "./assets/heroes/Style-09.jsx"
+import ThemeToggler from "./assets/components/buttons/ThemeToggler.jsx"
 
 function App() {
   return (
-      <Style09/>
+      <ThemeToggler />
   )
 }
 
