@@ -12,6 +12,7 @@ import Contact from "../contacts/Contact.jsx"
 import Footer from "../footers/Footer.jsx"
 import { useState } from "react"
 import { getRandomIntNumber } from "../../utils/getRandom.js"
+import ThemeToggler from "../components/buttons/ThemeToggler.jsx"
 
 const randomize = () => {
         
@@ -37,7 +38,8 @@ export default function Variant01() {
     return(
         <div className="flex items-center flex-col ">
             <button className="fixed bottom-4 right-4 w-24 h-10 dark:text-[#F2EDEB] text-black font-inter text-base not-italic font-semibold outline-4 out-[#F2EDEB] outline hover:opacity-75 animate-bounce z-[9999]" onClick={handleClicking}>randomize</button>
-            <Hero style={10} /> 
+            <ThemeToggler />
+            <Hero style={randomSet[1]} /> 
             <Content style={randomSet[5]} />
             <Showcase style={randomSet[3]} />
             <Feature style={randomSet[6]} />
