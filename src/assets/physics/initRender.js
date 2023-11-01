@@ -1,16 +1,4 @@
 import { Render } from "matter-js";
-
-class someClass {
-  constructor(width, height) {
-    this.width = width;
-    this.height = height;
-  }
-
-  someMethod() {
-    return this.width + this.height;
-  }
-}
-
 export default class MyRender extends Render {
   constructor(width, height, element, engine) {
     this.width = width;

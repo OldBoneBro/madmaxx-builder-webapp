@@ -1,5 +1,5 @@
 import { Bodies, Body } from "matter-js";
-import { getRandomOffset, getRandomIntNumber } from "../../utils/getRandom";
+import { getRandomIntNumber } from "../../utils/getRandom";
 
 export function physifyRightSection() {
   const leftWall = Bodies.rectangle(102, 450, 96, 900, {

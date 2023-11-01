@@ -2,7 +2,7 @@ import Navigatinon from "../navigation/Navigation.jsx"
 import ButtonPrimary from "../components/buttons/ButtonPrimary.jsx"
 import ButtonTertiary from "../components/buttons/ButtonTertiary.jsx"
 import { useEffect, useRef } from "react"
-import { Engine, Render, Composite, Runner, Bodies, Mouse, MouseConstraint, Constraint, Events, Body, Collision } from "matter-js"
+import { Engine, Render, Composite, Runner, Bodies, Mouse, MouseConstraint, Constraint, Events, Collision } from "matter-js"
 import { reposition } from "../physics/reposition.js"
 
 export default function Style01() {
