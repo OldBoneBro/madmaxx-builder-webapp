@@ -2,7 +2,7 @@ import Navigatinon from "../navigation/Navigation.jsx"
 import ButtonPrimary from "../components/buttons/ButtonPrimary.jsx"
 import ButtonTertiary from "../components/buttons/ButtonTertiary.jsx"
 import { useEffect, useRef } from "react"
-import { Engine, Render,Bodies, Body, Mouse, MouseConstraint, Composite, Runner, Events, Collision, } from "matter-js"
+import { Engine, Render,Bodies, Body, Mouse, MouseConstraint, Composite, Runner, Events, Collision } from "matter-js"
 import { Particles, physifyRightSection } from "../physics/physifyRightSection.js"
 import { populateWithLetterAreas } from "../physics/populateWithLetterAreas.js"
 import { centerBody } from "../physics/centerBody.js"
@@ -111,32 +111,29 @@ export default function Style10() {
             if (!(Collision.collides(bodyA, bodyB))) element.classList.remove('text-white')
 
         } 
-
-        window.onload = () => {
             
-            const letterAreas = populateWithLetterAreas(540, 10)
-            letterAreas.forEach((area) => Composite.add(engine.current.world, area.body))
+        const letterAreas = populateWithLetterAreas(540, 10)
+        letterAreas.forEach((area) => Composite.add(engine.current.world, area.body))
 
-            Events.on(engine.current, 'beforeUpdate', function() {
+        Events.on(engine.current, 'beforeUpdate', function() {
 
-                centerBody(-100, 1300, -100, 1000, right, 326, 450, engine.current.world)
-                if((Collision.collides(walls[2], right)) && (!withFigures.current)) {
-                    Composite.add(engine.current.world, [
-                        ...rectangles,
-                        ...circles,        
-                    ])
-                    withFigures.current = true
-                }
-    
-                if (withFigures.current) {
-                    circles.forEach((ball) => reposition(right.parts[9], ball, right.parts[8]))
-                    rectangles.forEach((rectangle) => reposition(right.parts[10], rectangle, right.parts[7]))
-                }
+            centerBody(-100, 1300, -100, 1000, right, 326, 450, engine.current.world)
+            if((Collision.collides(walls[2], right)) && (!withFigures.current)) {
+                Composite.add(engine.current.world, [
+                    ...rectangles,
+                    ...circles,        
+                ])
+                withFigures.current = true
+            }
 
-                letterAreas.forEach((area) => colourToggler(right, area.body, area.element))
+            if (withFigures.current) {
+                circles.forEach((ball) => reposition(right.parts[9], ball, right.parts[8]))
+                rectangles.forEach((rectangle) => reposition(right.parts[10], rectangle, right.parts[7]))
+            }
 
-            })
-        }
+            letterAreas.forEach((area) => colourToggler(right, area.body, area.element))
+
+        })
 
         mouseConstraint.mouse.element.removeEventListener('mousewheel', mouseConstraint.mouse.mousewheel)
         mouseConstraint.mouse.element.removeEventListener('DOMMouseScroll', mouseConstraint.mouse.mousewheel)
