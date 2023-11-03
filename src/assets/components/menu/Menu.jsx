@@ -1,4 +1,4 @@
-import MenuIcon from "./../../imgs/svgs/icons/Menu.svg?react";
+import MenuIcon from "https://github.com/OldBoneBro/madmaxx-builder-webapp/blob/main/src/assets/imgs/svgs/Icons/Menu.svg?react";
 
 export default function Menu () {
 
