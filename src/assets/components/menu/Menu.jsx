@@ -1,4 +1,4 @@
-import MenuIcon from "../../imgs/svgs/icons/Menu.svg?react";
+import MenuIcon from "./../../imgs/svgs/icons/Menu.svg?react";
 
 export default function Menu () {
 
