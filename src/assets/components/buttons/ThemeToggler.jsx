@@ -4,7 +4,7 @@ export default function ThemeToggler() {
 
     const [theme, setTheme] = useState(() => {
 
-        if(!JSON.parse(localStorage.getItem('theme')).type) {
+        if(!JSON.parse(localStorage.getItem('theme'))?.type) {
    
             let storageTheme = { 
                 type: 'light',
