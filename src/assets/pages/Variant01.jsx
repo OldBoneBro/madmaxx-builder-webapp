@@ -16,7 +16,6 @@ import ThemeToggler from "../components/buttons/ThemeToggler.jsx"
 
 const randomize = () => {
         
-    //const getRandomIntNumber = (max, min = 1) => Math.trunc(((Math.random() * (max - min + 1)) + 1))
     const arrayOfRandNumbers = [getRandomIntNumber(11), getRandomIntNumber(10), getRandomIntNumber(5), getRandomIntNumber(3),
                                 getRandomIntNumber(3), getRandomIntNumber(6), getRandomIntNumber(5), getRandomIntNumber(3),
                                 getRandomIntNumber(4), getRandomIntNumber(4), getRandomIntNumber(4), getRandomIntNumber(17)]
@@ -29,11 +28,8 @@ export default function Variant01() {
     const [randomSet, setRandomSet] = useState(() => randomize())
 
     function handleClicking(){ 
-        console.log('click')
-        console.log(randomize())
         setRandomSet(randomize())
-    } 
-    
+    }   
 
     return(
         <div className="flex items-center flex-col ">
